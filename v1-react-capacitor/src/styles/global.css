@@ -1,0 +1,515 @@
+/* ═══════════════════════════════════════════════════════════════
+   NAAM SMARAN — GLOBAL STYLESHEET
+   ─────────────────────────────────────────────────────────────────
+   All utility classes here consume token variables from tokens.css.
+   NO hardcoded hex, px, or rgba values allowed — only var() references.
+
+   RULES:
+   1. NEVER hardcode a color or spacing value in a component file.
+   2. box-shadow spread MUST be 0. Only inset allowed for glass shine.
+   3. NEVER apply letter-spacing to .font-ui or .font-deco (Devanagari matras break).
+   4. Text opacity: 1.00 / 0.65 / 0.38 — only these three. No exceptions.
+   5. border-radius: 24px cards / 14px buttons / 999px pills / 12px inputs.
+   6. Animation max: 600ms. Only exception: --duration-mala (800ms).
+
+   श्री राधावल्लभ लाल जु की जय 🙏
+   ═══════════════════════════════════════════════════════════════ */
+
+
+/* ───────────────────────────────────────────────────────────────
+   CSS RESET / BASE
+   ─────────────────────────────────────────────────────────────── */
+
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  /* Prevent font size inflation on mobile */
+  -moz-text-size-adjust: none;
+  -webkit-text-size-adjust: none;
+  text-size-adjust: none;
+}
+
+body {
+  min-height: var(--viewport-height);
+  background-color: var(--bg-primary);
+  background-image: var(--bg-gradient);
+  background-attachment: fixed;
+  color: rgba(255, 255, 255, var(--opacity-primary));
+  font-family: var(--font-devanagari-ui);
+  font-size: var(--text-body);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--leading-normal);
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+
+  /* Prevent pull-to-refresh on mobile */
+  overscroll-behavior-y: contain;
+}
+
+#root {
+  min-height: var(--viewport-height);
+  position: relative;
+}
+
+/* Remove default focus styles, add custom */
+:focus-visible {
+  outline: 2px solid var(--accent-primary);
+  outline-offset: 2px;
+}
+
+/* Remove tap highlight on mobile */
+a,
+button,
+[role="button"] {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Prevent user select on interactive elements */
+button,
+[role="button"],
+.tappable {
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Images */
+img,
+picture,
+video,
+canvas,
+svg {
+  display: block;
+  max-width: 100%;
+}
+
+/* Form elements inherit fonts */
+input,
+button,
+textarea,
+select {
+  font: inherit;
+}
+
+/* Remove list styles */
+ul,
+ol {
+  list-style: none;
+}
+
+
+/* ───────────────────────────────────────────────────────────────
+   GLASS CARD CLASSES
+   The One True Glass Formula — PRD §4.4 + §10.3
+   ─────────────────────────────────────────────────────────────── */
+
+.glass-card {
+  background: var(--glass-bg);
+  border: var(--glass-border);
+  border-radius: var(--glass-radius);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  box-shadow: var(--glass-shine);
+  padding: var(--padding-card);
+}
+
+.glass-card--interactive {
+  background: var(--glass-bg);
+  border: var(--glass-border);
+  border-radius: var(--glass-radius);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  box-shadow: var(--glass-shine);
+  padding: var(--padding-card);
+  cursor: pointer;
+  transition: var(--transition-color), var(--transition-tap);
+}
+
+.glass-card--interactive:hover {
+  background: var(--glass-bg-hover);
+}
+
+.glass-card--interactive:active {
+  background: var(--glass-bg-active);
+  transform: scale(var(--scale-tap));
+}
+
+.glass-card--elevated {
+  background: var(--glass-bg-elevated);
+  border: var(--glass-border);
+  border-radius: var(--glass-radius);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  box-shadow: var(--glass-shine);
+  padding: var(--padding-card);
+}
+
+
+/* ───────────────────────────────────────────────────────────────
+   TEXT HIERARCHY — EXACTLY 3 OPACITY LEVELS
+   ─────────────────────────────────────────────────────────────── */
+
+.text-primary {
+  color: rgba(255, 255, 255, var(--opacity-primary));
+}
+
+.text-secondary {
+  color: rgba(255, 255, 255, var(--opacity-secondary));
+}
+
+.text-tertiary {
+  color: rgba(255, 255, 255, var(--opacity-tertiary));
+}
+
+.text-accent {
+  color: var(--accent-primary);
+}
+
+.text-gold {
+  color: var(--accent-gold);
+}
+
+
+/* ───────────────────────────────────────────────────────────────
+   FONT FAMILY SELECTORS
+   ─────────────────────────────────────────────────────────────── */
+
+.font-ui {
+  font-family: var(--font-devanagari-ui);
+}
+
+.font-deco {
+  font-family: var(--font-devanagari-deco);
+}
+
+.font-numbers {
+  font-family: var(--font-numbers);
+}
+
+.font-bold {
+  font-weight: var(--font-weight-bold);
+}
+
+.font-regular {
+  font-weight: var(--font-weight-regular);
+}
+
+
+/* ───────────────────────────────────────────────────────────────
+   TYPE SCALE
+   ─────────────────────────────────────────────────────────────── */
+
+.text-hero {
+  font-size: var(--text-hero);
+  line-height: var(--leading-tight);
+}
+
+.text-large {
+  font-size: var(--text-large);
+  line-height: var(--leading-tight);
+}
+
+.text-medium {
+  font-size: var(--text-medium);
+  line-height: var(--leading-normal);
+}
+
+.text-body {
+  font-size: var(--text-body);
+  line-height: var(--leading-normal);
+}
+
+.text-small {
+  font-size: var(--text-secondary);
+  line-height: var(--leading-normal);
+}
+
+.text-xs {
+  font-size: var(--text-tertiary);
+  line-height: var(--leading-normal);
+}
+
+.text-label {
+  font-size: var(--text-label);
+  line-height: var(--leading-tight);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+}
+
+
+/* ───────────────────────────────────────────────────────────────
+   GRADIENT TEXT — NUMBERS ONLY (Addition 2)
+   ⚠️ Do NOT use gradient text on Devanagari.
+   -webkit-text-fill-color is unreliable on Devanagari in Android WebView.
+   For Devanagari accent text, use: color: var(--accent-primary);
+   ─────────────────────────────────────────────────────────────── */
+
+.text-gradient-numbers {
+  font-family: var(--font-numbers);
+  background: var(--gradient-accent);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+
+/* ───────────────────────────────────────────────────────────────
+   LAYOUT HELPERS
+   ─────────────────────────────────────────────────────────────── */
+
+.screen {
+  min-height: var(--viewport-height);
+  padding-bottom: calc(var(--bottom-nav-height) + var(--safe-area-bottom));
+  position: relative;
+}
+
+.container {
+  max-width: var(--content-max-width);
+  margin: 0 auto;
+  padding-left: var(--padding-section);
+  padding-right: var(--padding-section);
+}
+
+.safe-top {
+  padding-top: var(--safe-top);
+}
+
+.safe-bottom {
+  padding-bottom: var(--safe-bottom);
+}
+
+
+/* ───────────────────────────────────────────────────────────────
+   STATUS / STATE COLORS
+   ─────────────────────────────────────────────────────────────── */
+
+.state-exceeded {
+  color: var(--state-exceeded);
+}
+
+.state-partial {
+  color: var(--state-partial);
+}
+
+.state-missed {
+  color: var(--state-missed);
+}
+
+.state-streak {
+  color: var(--state-streak-fire);
+}
+
+
+/* ───────────────────────────────────────────────────────────────
+   TAP FEEDBACK
+   ─────────────────────────────────────────────────────────────── */
+
+.tappable {
+  transition: var(--transition-tap);
+  cursor: pointer;
+}
+
+.tappable:active {
+  transform: scale(var(--scale-tap));
+}
+
+
+/* ───────────────────────────────────────────────────────────────
+   GLOW EFFECT (replaces box-shadow — spread is forbidden)
+   ─────────────────────────────────────────────────────────────── */
+
+.glow-accent {
+  filter: drop-shadow(0 0 12px var(--accent-glow));
+}
+
+.glow-gold {
+  filter: drop-shadow(0 0 12px rgba(245, 203, 167, 0.25));
+}
+
+
+/* ───────────────────────────────────────────────────────────────
+   DIVIDER
+   ─────────────────────────────────────────────────────────────── */
+
+.divider {
+  height: 1px;
+  background: rgba(255, 255, 255, 0.06);
+  margin: var(--space-4) 0;
+  border: none;
+}
+
+
+/* ───────────────────────────────────────────────────────────────
+   PROGRESS BAR
+   ─────────────────────────────────────────────────────────────── */
+
+.progress-bar-track {
+  width: 100%;
+  height: var(--bar-height);
+  background: var(--bar-track);
+  border-radius: var(--bar-radius);
+  overflow: hidden;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background: var(--gradient-accent);
+  border-radius: var(--bar-radius);
+  transition: width var(--duration-normal) var(--ease-out);
+}
+
+.progress-bar-track--thick {
+  height: var(--bar-height-thick);
+}
+
+
+/* ───────────────────────────────────────────────────────────────
+   INPUT FIELDS
+   ─────────────────────────────────────────────────────────────── */
+
+.glass-input {
+  background: var(--glass-bg-input);
+  border: 1px solid var(--glass-border-input);
+  border-radius: var(--radius-input);
+  padding: var(--space-3) var(--space-4);
+  color: rgba(255, 255, 255, var(--opacity-primary));
+  font-family: var(--font-devanagari-ui);
+  font-size: var(--text-body);
+  transition: var(--transition-color);
+  width: 100%;
+}
+
+.glass-input:focus {
+  border-color: rgba(255, 255, 255, 0.20);
+  outline: none;
+}
+
+.glass-input::placeholder {
+  color: rgba(255, 255, 255, var(--opacity-tertiary));
+}
+
+
+/* ───────────────────────────────────────────────────────────────
+   SCROLLBAR HIDING — for horizontal section nav
+   ─────────────────────────────────────────────────────────────── */
+
+.hide-scrollbar {
+  scrollbar-width: none;          /* Firefox */
+  -ms-overflow-style: none;       /* IE/Edge */
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;                  /* Chrome, Safari, Opera */
+}
+
+
+/* ───────────────────────────────────────────────────────────────
+   BUTTON BASE
+   ─────────────────────────────────────────────────────────────── */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: var(--padding-button);
+  border: none;
+  border-radius: var(--radius-button);
+  font-family: var(--font-devanagari-ui);
+  font-size: var(--text-body);
+  font-weight: var(--font-weight-bold);
+  cursor: pointer;
+  transition: var(--transition-tap), var(--transition-color);
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.btn:active {
+  transform: scale(var(--scale-tap));
+}
+
+.btn--primary {
+  background: var(--gradient-accent);
+  color: var(--bg-primary);
+}
+
+.btn--ghost {
+  background: transparent;
+  color: var(--accent-primary);
+  border: 1px solid rgba(var(--accent-primary-rgb), 0.30);
+}
+
+.btn--ghost:hover {
+  background: rgba(var(--accent-primary-rgb), 0.08);
+}
+
+
+/* ───────────────────────────────────────────────────────────────
+   PILL / CHIP
+   ─────────────────────────────────────────────────────────────── */
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-chip);
+  font-size: var(--text-secondary);
+  cursor: pointer;
+  transition: var(--transition-tap), var(--transition-color);
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.pill:active {
+  transform: scale(var(--scale-tap));
+}
+
+.pill--inactive {
+  background: var(--surface-glass);
+  color: rgba(255, 255, 255, var(--opacity-secondary));
+  border: 1px solid var(--border-glass);
+}
+
+.pill--active {
+  background: var(--nav-active-bg);
+  color: var(--nav-active-text);
+  border: 1px solid transparent;
+}
+
+
+/* ───────────────────────────────────────────────────────────────
+   FADE-IN ANIMATION — mount entry for cards
+   ─────────────────────────────────────────────────────────────── */
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-in {
+  animation: fadeInUp var(--duration-normal) var(--ease-out) both;
+}
+
+/* Staggered children — use style="--stagger: N" on each child */
+.animate-stagger {
+  animation: fadeInUp var(--duration-normal) var(--ease-out) both;
+  animation-delay: calc(var(--stagger, 0) * 60ms);
+}

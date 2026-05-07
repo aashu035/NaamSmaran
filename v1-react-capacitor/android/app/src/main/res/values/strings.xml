@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">नाम स्मरण</string>
+    <string name="title_activity_main">नाम स्मरण</string>
+    <string name="package_name">com.radhavallabh.naamsmaran</string>
+    <string name="custom_url_scheme">com.radhavallabh.naamsmaran</string>
+</resources>

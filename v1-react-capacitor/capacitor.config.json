@@ -1,0 +1,50 @@
+{
+  "appId": "com.radhavallabh.naamsmaran",
+  "appName": "नाम स्मरण",
+  "webDir": "dist",
+  "bundledWebRuntime": false,
+
+  "server": {
+    "androidScheme": "https",
+    "allowNavigation": [
+      "fonts.googleapis.com",
+      "fonts.gstatic.com"
+    ]
+  },
+
+  "android": {
+    "allowMixedContent": false,
+    "backgroundColor": "#070010",
+    "buildOptions": {
+      "keystorePath": null,
+      "keystoreAlias": null
+    },
+    "minSdkVersion": 26
+  },
+
+  "plugins": {
+    "SplashScreen": {
+      "launchShowDuration": 2500,
+      "launchAutoHide": true,
+      "launchFadeOutDuration": 400,
+      "backgroundColor": "#070010",
+      "showSpinner": false,
+      "androidScaleType": "CENTER_CROP",
+      "splashFullScreen": true,
+      "splashImmersive": true
+    },
+    "StatusBar": {
+      "style": "DARK",
+      "backgroundColor": "#070010",
+      "overlaysWebView": false
+    },
+    "LocalNotifications": {
+      "smallIcon": "ic_stat_naam",
+      "iconColor": "#E8A0BF",
+      "sound": null
+    },
+    "Haptics": {
+      "enabled": true
+    }
+  }
+}

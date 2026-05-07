@@ -1,0 +1,41 @@
+# IDE
+.idea/
+.cursor/
+*.iml
+
+# Node
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Android
+.gradle/
+.gradle-user-home/
+build/
+captures/
+*/build/
+*.apk
+*.aar
+*.jks
+*.keystore
+google-services.json
+
+# Local env
+.env
+.env.local
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Large Media
+# These are too large for GitHub (>3GB total). 
+# Suggesting ignoring them and uploading to a CDN or LFS if needed.
+frames/
+videos/
+Assets/
+
+# Archived versions (kept if they are small, but ignoring their build artifacts)
+# v0-prototype/
+# v1-react-capacitor/

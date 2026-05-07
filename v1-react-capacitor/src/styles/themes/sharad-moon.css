@@ -1,0 +1,44 @@
+/* ═══════════════════════════════════════════════════════════════
+   THEME: SHARAD MOON (शरद पूर्णिमा) — DEFAULT
+   Mood: Lunar, mystical. Deep indigo, pink lotus, moonlight silver.
+   From Pada 26 — the full moon over the lotus pool.
+   ═══════════════════════════════════════════════════════════════ */
+
+[data-theme="sharad-moon"] {
+  /* Backgrounds */
+  --bg-primary:           #070010;
+  --bg-gradient:          radial-gradient(ellipse at 30% 20%, rgba(184,200,255,0.08) 0%, transparent 60%),
+                          radial-gradient(ellipse at 70% 80%, rgba(232,160,191,0.06) 0%, transparent 50%);
+  --bg-overlay:           rgba(7, 0, 16, 0.70);
+
+  /* Accent palette */
+  --accent-primary:       #E8A0BF;
+  --accent-primary-rgb:   232, 160, 191;
+  --accent-secondary:     #B8C8FF;
+  --accent-secondary-rgb: 184, 200, 255;
+  --accent-gold:          #F5CBA7;
+  --accent-glow:          rgba(232, 160, 191, 0.15);
+
+  /* Gradients */
+  --gradient-accent:      linear-gradient(135deg, #E8A0BF 0%, #B8C8FF 100%);
+  --gradient-accent-soft: linear-gradient(135deg, rgba(232,160,191,0.4) 0%, rgba(184,200,255,0.4) 100%);
+
+  /* Mala beads */
+  --mala-bead-normal:     #6B4D7A;
+  --mala-bead-thread:     rgba(232, 160, 191, 0.20);
+
+  /* Navigation state tokens */
+  --nav-active-bg:        var(--gradient-accent);
+  --nav-active-text:      var(--bg-primary);
+  --nav-icon-active:      var(--accent-primary);
+  --nav-icon-inactive:    rgba(255, 255, 255, 0.35);
+  --nav-label-active:     var(--accent-primary);
+  --nav-label-inactive:   rgba(255, 255, 255, 0.35);
+
+  /* Notification surface */
+  --notification-bg:      rgba(var(--accent-primary-rgb), 0.12);
+  --notification-border:  rgba(var(--accent-primary-rgb), 0.25);
+
+  /* Frame folder for FramePlayer */
+  --frame-folder:         'sharad-moon';
+}

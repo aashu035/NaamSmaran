@@ -1,0 +1,44 @@
+/* ═══════════════════════════════════════════════════════════════
+   THEME: SHAYAN (शयन)
+   Mood: Still, midnight. Midnight blue, diya warm gold, cool silver.
+   The final night scene — diya flame glowing softly, Priya at rest.
+   ═══════════════════════════════════════════════════════════════ */
+
+[data-theme="shayan"] {
+  /* Backgrounds */
+  --bg-primary:           #020209;
+  --bg-gradient:          radial-gradient(ellipse at 50% 20%, rgba(200,216,240,0.06) 0%, transparent 60%),
+                          radial-gradient(ellipse at 30% 80%, rgba(255,208,128,0.08) 0%, transparent 50%);
+  --bg-overlay:           rgba(2, 2, 9, 0.80);
+
+  /* Accent palette */
+  --accent-primary:       #C8D8F0;
+  --accent-primary-rgb:   200, 216, 240;
+  --accent-secondary:     #FFD080;
+  --accent-secondary-rgb: 255, 208, 128;
+  --accent-gold:          #FFD080;
+  --accent-glow:          rgba(200, 216, 240, 0.08);
+
+  /* Gradients */
+  --gradient-accent:      linear-gradient(135deg, #C8D8F0 0%, #FFD080 100%);
+  --gradient-accent-soft: linear-gradient(135deg, rgba(200,216,240,0.4) 0%, rgba(255,208,128,0.4) 100%);
+
+  /* Mala beads */
+  --mala-bead-normal:     #2A3A5C;
+  --mala-bead-thread:     rgba(200, 216, 240, 0.15);
+
+  /* Navigation state tokens */
+  --nav-active-bg:        var(--gradient-accent);
+  --nav-active-text:      var(--bg-primary);
+  --nav-icon-active:      var(--accent-primary);
+  --nav-icon-inactive:    rgba(255, 255, 255, 0.35);
+  --nav-label-active:     var(--accent-primary);
+  --nav-label-inactive:   rgba(255, 255, 255, 0.35);
+
+  /* Notification surface */
+  --notification-bg:      rgba(var(--accent-primary-rgb), 0.12);
+  --notification-border:  rgba(var(--accent-primary-rgb), 0.25);
+
+  /* Frame folder for FramePlayer */
+  --frame-folder:         'shayan';
+}
