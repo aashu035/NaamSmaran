@@ -1,5 +1,6 @@
 package com.radhavallabh.naamsmaran.ui.theme
 
+import androidx.compose.animation.core.spring
 import androidx.compose.ui.unit.dp
 
 /**
@@ -58,4 +59,30 @@ object Dimens {
     // Tap feedback
     const val ScaleTap  = 0.96f
     const val ScaleHover = 1.02f
+}
+
+/**
+ * Pre-built animation specs for consistent motion across the app.
+ * References [Dimens] constants — Rule 7 compliance.
+ *
+ * जय श्री हित हरिवंश महाप्रभु 🙏
+ */
+object NaamSmaranMotion {
+    /** Default spring: used for tap-scale feedback, card reveals. */
+    val DefaultSpring = spring<Float>(
+        dampingRatio = Dimens.SpringDampingDefault,
+        stiffness = Dimens.SpringStiffnessMedium
+    )
+
+    /** Gentle spring: used for counter roll-up in Day-End Analysis. */
+    val CounterSpring = spring<Float>(
+        dampingRatio = Dimens.SpringDampingDefault,
+        stiffness = Dimens.SpringStiffnessLow
+    )
+
+    /** Tap scale factor (Rule 6) — subtle press feedback. */
+    const val TapScale = Dimens.ScaleTap
+
+    /** Max animation duration (Rule 7) — hard cap. */
+    const val MaxAnimationDurationMs = 400
 }

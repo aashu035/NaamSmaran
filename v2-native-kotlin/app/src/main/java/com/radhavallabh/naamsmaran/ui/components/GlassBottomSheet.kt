@@ -1,6 +1,6 @@
 package com.radhavallabh.naamsmaran.ui.components
 
-import android.os.Build
+import android.os.SystemClock
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.spring
@@ -11,7 +11,6 @@ import androidx.compose.foundation.gestures.draggable
 import androidx.compose.foundation.gestures.rememberDraggableState
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -19,37 +18,38 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.asComposeRenderEffect
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
-import com.radhavallabh.naamsmaran.ui.theme.BorderGlass
+import com.radhavallabh.naamsmaran.ui.theme.BorderGlassSheet
 import com.radhavallabh.naamsmaran.ui.theme.Dimens
-import com.radhavallabh.naamsmaran.ui.theme.SurfaceGlass
+import com.radhavallabh.naamsmaran.ui.theme.SurfaceGlassSheet
 import com.radhavallabh.naamsmaran.ui.theme.TextTertiary
-import kotlin.math.roundToInt
 
 /**
  * GlassBottomSheet — Premium frosted glass bottom sheet.
  *
- * Engineering requirements from the directive:
- * 1. RenderEffect.createBlurEffect on Android 12+ for true background blur
- * 2. Spring animations for drag snap points — heavy, physical feel
- * 3. Draggable with velocity-based fling detection
- *
- * Snap points: COLLAPSED (handle only), HALF (50% screen), EXPANDED (85% screen)
+ * Behaviour (review feedback):
+ * - **Binary snap only** (open ⟷ peek) — open snaps to ~85 % viewport (near full), not mid-screen.
+ * - **No bounce** on open (avoids “springs back” look from [DampingRatioMediumBouncy]).
+ * - **Ignores spurious drag-ended** for a few hundred ms right after programmatic open
+ *   (swipe-up-from-home can leak into the sheet draggable and snap to the wrong point).
+ * - **Scroll** lives in the sheet body; drag-to-resize uses the **handle strip only** so
+ *   vertical scroll gestures are not eaten by the outer draggable.
  *
  * श्री राधावल्लभ लाल जु की जय 🙏
  */
@@ -58,87 +58,61 @@ fun GlassBottomSheet(
     modifier: Modifier = Modifier,
     isExpanded: Boolean = false,
     onDismiss: () -> Unit = {},
-    content: @Composable ColumnScope.() -> Unit
+    content: @Composable () -> Unit
 ) {
     val configuration = LocalConfiguration.current
     val density = LocalDensity.current
     val screenHeightPx = with(density) { configuration.screenHeightDp.dp.toPx() }
 
-    // Snap points as fractions of screen height
-    val collapsedOffset = screenHeightPx * 0.92f  // Nearly hidden, just handle visible
-    val halfOffset = screenHeightPx * 0.50f       // Half screen
-    val expandedOffset = screenHeightPx * 0.15f   // Near full screen
+    // Top edge Y offset (px, positive = down). Smaller ⇒ sheet sits higher ⇒ more viewport used.
+    // 0.08 opens near full viewport so section grid + gallery are visible without a second expand step.
+    val collapsedOffset = screenHeightPx * 0.92f
+    val openedOffset = screenHeightPx * 0.08f
+    val midpoint = (openedOffset + collapsedOffset) / 2f
 
     var currentTarget by remember {
-        mutableStateOf(if (isExpanded) halfOffset else collapsedOffset)
+        mutableStateOf(if (isExpanded) openedOffset else collapsedOffset)
     }
 
-    // ── React to external isExpanded changes ────────────────────────────────
-    // Without this, the sheet stays hidden even when HomeScreen sets sheetOpen=true,
-    // because remember{} only evaluates once at first composition.
+    /** Drop drag-end snap briefly after open-from-home to avoid instant re-snap “recoil”. */
+    var suppressDragEndUntilMs by remember { mutableLongStateOf(0L) }
+
     LaunchedEffect(isExpanded) {
-        currentTarget = if (isExpanded) halfOffset else collapsedOffset
+        if (isExpanded) {
+            suppressDragEndUntilMs = SystemClock.uptimeMillis() + 420L
+            currentTarget = openedOffset
+        } else {
+            currentTarget = collapsedOffset
+        }
     }
 
-    // Spring animation — heavy, physical feel per directive
     val animatedOffset by animateDpAsState(
         targetValue = with(density) { currentTarget.toDp() },
         animationSpec = spring(
-            dampingRatio = Spring.DampingRatioMediumBouncy,  // 0.5 — springy
-            stiffness = Spring.StiffnessMediumLow             // 200 — heavy feel
+            dampingRatio = Spring.DampingRatioNoBouncy,
+            stiffness = Spring.StiffnessMedium
         ),
         label = "sheet_offset"
     )
 
     var dragAccumulator by remember { mutableStateOf(0f) }
 
+    val sheetScroll = rememberScrollState()
+    val draggableState = rememberDraggableState { delta ->
+        dragAccumulator += delta
+        val newTarget = (currentTarget + delta).coerceIn(openedOffset, collapsedOffset)
+        currentTarget = newTarget
+    }
+
     Box(
         modifier = modifier
             .fillMaxWidth()
             .offset { IntOffset(0, animatedOffset.roundToPx()) }
-            .draggable(
-                orientation = Orientation.Vertical,
-                state = rememberDraggableState { delta ->
-                    dragAccumulator += delta
-                    // Real-time drag follow
-                    val newTarget = (currentTarget + delta).coerceIn(expandedOffset, collapsedOffset)
-                    currentTarget = newTarget
-                },
-                onDragStarted = {
-                    dragAccumulator = 0f
-                },
-                onDragStopped = { velocity ->
-                    // Snap to nearest point based on position and velocity
-                    currentTarget = when {
-                        velocity > 1000f -> collapsedOffset  // Fast fling down → collapse
-                        velocity < -1000f -> expandedOffset  // Fast fling up → expand
-                        currentTarget < (expandedOffset + halfOffset) / 2 -> expandedOffset
-                        currentTarget < (halfOffset + collapsedOffset) / 2 -> halfOffset
-                        else -> {
-                            onDismiss()
-                            collapsedOffset
-                        }
-                    }
-                    dragAccumulator = 0f
-                }
-            )
-            .then(
-                // Android 12+ real blur effect
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                    Modifier.graphicsLayer {
-                        renderEffect = android.graphics.RenderEffect
-                            .createBlurEffect(60f, 60f, android.graphics.Shader.TileMode.CLAMP)
-                            .asComposeRenderEffect()
-                    }
-                } else {
-                    Modifier
-                }
-            )
             .clip(RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp))
-            .background(SurfaceGlass)
+            .background(SurfaceGlassSheet)
             .border(
                 width = 1.dp,
-                color = BorderGlass,
+                color = BorderGlassSheet,
                 shape = RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp)
             )
     ) {
@@ -146,23 +120,88 @@ fun GlassBottomSheet(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = Dimens.PaddingCard)
-                .navigationBarsPadding(),
-            horizontalAlignment = Alignment.CenterHorizontally
+                .navigationBarsPadding()
         ) {
-            // Drag handle
-            Spacer(modifier = Modifier.height(12.dp))
-            Box(
+            // ── Handle strip: only this region drags the sheet (body scrolls independently) ──
+            Column(
                 modifier = Modifier
-                    .width(36.dp)
-                    .height(4.dp)
-                    .clip(RoundedCornerShape(2.dp))
-                    .background(TextTertiary)
-            )
-            Spacer(modifier = Modifier.height(20.dp))
+                    .fillMaxWidth()
+                    .draggable(
+                        orientation = Orientation.Vertical,
+                        state = draggableState,
+                        onDragStarted = { dragAccumulator = 0f },
+                        onDragStopped = { velocity ->
+                            if (SystemClock.uptimeMillis() < suppressDragEndUntilMs) {
+                                // #region agent log
+                                com.radhavallabh.naamsmaran.debug.AgentDebugLog.log(
+                                    location = "GlassBottomSheet.kt:onDragStopped",
+                                    message = "drag_stopped_suppressed",
+                                    hypothesisId = "H3",
+                                    data = mapOf(
+                                        "velocity" to velocity,
+                                        "currentTargetPx" to currentTarget
+                                    ),
+                                    runId = "post-fix"
+                                )
+                                // #endregion
+                                dragAccumulator = 0f
+                                return@draggable
+                            }
+                            val oldTargetPx = currentTarget
+                            val (branch, newTarget) = when {
+                                velocity > 1000f ->
+                                    "velocity_gt_1000_collapse" to collapsedOffset
+                                velocity < -1000f ->
+                                    "velocity_lt_neg1000_open" to openedOffset
+                                currentTarget < midpoint ->
+                                    "snap_open" to openedOffset
+                                else ->
+                                    "snap_collapse" to collapsedOffset
+                            }
+                            if (newTarget == collapsedOffset) {
+                                onDismiss()
+                            }
+                            // #region agent log
+                            com.radhavallabh.naamsmaran.debug.AgentDebugLog.log(
+                                location = "GlassBottomSheet.kt:onDragStopped",
+                                message = "drag_stopped_snap",
+                                hypothesisId = "H1",
+                                data = mapOf(
+                                    "velocity" to velocity,
+                                    "branch" to branch,
+                                    "oldTargetPx" to oldTargetPx,
+                                    "newTargetPx" to newTarget,
+                                    "collapsedPx" to collapsedOffset,
+                                    "onDismissForCollapse" to (newTarget == collapsedOffset)
+                                ),
+                                runId = "post-fix"
+                            )
+                            // #endregion
+                            currentTarget = newTarget
+                            dragAccumulator = 0f
+                        }
+                    )
+                    .padding(top = 12.dp, bottom = 8.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Box(
+                    modifier = Modifier
+                        .width(36.dp)
+                        .height(4.dp)
+                        .clip(RoundedCornerShape(2.dp))
+                        .background(TextTertiary)
+                )
+            }
 
-            content()
-
-            Spacer(modifier = Modifier.height(Dimens.PaddingCard))
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .verticalScroll(sheetScroll),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                content()
+                Spacer(modifier = Modifier.height(Dimens.PaddingCard))
+            }
         }
     }
 }

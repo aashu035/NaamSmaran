@@ -298,7 +298,7 @@ fun SettingsScreen(onBack: () -> Unit) {
             )
             Spacer(modifier = Modifier.height(Dimens.Space3))
             Text(
-                text = "जय श्री हित हरिवंश महाप्रभु 🙏\nराधावल्लभ संप्रदाय",
+                text = "जय जय श्री हित हरिवंश\nराधावल्लभ श्री हरिवंश",
                 style = NaamSmaranTypography.bodyMedium,
                 color = TextTertiary
             )

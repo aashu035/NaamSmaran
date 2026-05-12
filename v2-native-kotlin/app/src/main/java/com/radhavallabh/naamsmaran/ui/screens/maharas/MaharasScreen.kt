@@ -70,7 +70,7 @@ fun MaharasScreen(onBack: () -> Unit) {
     )
 
     SectionScaffold(
-        title = "सुधानिधी",
+        title = "सुधानिधी स्तोत्र",
         emoji = "🪷",
         onBack = onBack
     ) {
@@ -78,7 +78,7 @@ fun MaharasScreen(onBack: () -> Unit) {
         // ── Today's Progress ────────────────────────────────────────────────
         GlassCardColumn {
             Text(
-                text = "🪷 श्री हित राधा सुधानिधी जी",
+                text = "श्री हित राधा सुधानिधी जी स्तोत्र",
                 style = NaamSmaranTypography.titleMedium,
                 color = SharadMoonColors.accentPrimary,
                 fontWeight = FontWeight.SemiBold

@@ -1,5 +1,6 @@
 package com.radhavallabh.naamsmaran.data.local.entity
 
+import androidx.compose.runtime.Stable
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
@@ -23,6 +24,7 @@ import androidx.room.PrimaryKey
  *
  * जय श्री हित हरिवंश महाप्रभु 🙏
  */
+@Stable
 @Entity(tableName = "daily_records")
 data class DailyRecord(
     @PrimaryKey

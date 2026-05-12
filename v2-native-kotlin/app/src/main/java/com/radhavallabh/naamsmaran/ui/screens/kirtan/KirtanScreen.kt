@@ -78,7 +78,7 @@ fun KirtanScreen(onBack: () -> Unit) {
     )
 
     SectionScaffold(
-        title = "चतुरसी",
+        title = "श्री हित चतुरसी जी",
         emoji = "📖",
         onBack = onBack
     ) {
@@ -86,7 +86,7 @@ fun KirtanScreen(onBack: () -> Unit) {
         // ── Today's Progress ────────────────────────────────────────────────
         GlassCardColumn {
             Text(
-                text = "📖 श्री हित चतुरसी जी",
+                text = "श्री हित चतुरसी जी",
                 style = NaamSmaranTypography.titleMedium,
                 color = SharadMoonColors.accentPrimary,
                 fontWeight = FontWeight.SemiBold

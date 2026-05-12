@@ -23,12 +23,10 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
@@ -59,6 +57,7 @@ import com.radhavallabh.naamsmaran.ui.components.QuickAddButton
 import com.radhavallabh.naamsmaran.ui.components.SectionNavButton
 import com.radhavallabh.naamsmaran.ui.theme.Dimens
 import com.radhavallabh.naamsmaran.ui.theme.NaamSmaranTypography
+import com.radhavallabh.naamsmaran.debug.AgentDebugLog
 import java.text.NumberFormat
 import java.util.Locale
 
@@ -69,7 +68,7 @@ import java.util.Locale
  * 1. [ImageShowreelBackground] — fullscreen infinite crossfade of devotional images
  * 2. [StreakBadge]             — top-right streak badge (always visible, subtle)
  * 3. [FloatingCounter]         — animated-in/out counter overlay (center)
- * 4. SwipeHint                 — "↑ स्लाइड करें" at bottom, fades after 5 seconds
+ * 4. SwipeHint                 — "↑ स्लाईड करें" at bottom, fades after 5 seconds
  * 5. [GlassBottomSheet]        — swipeable quick-add + section nav panel
  *
  * Interaction model:
@@ -96,6 +95,21 @@ fun HomeScreen(
 
     var sheetOpen by remember { mutableStateOf(false) }
     var swipeDeltaY by remember { mutableFloatStateOf(0f) }
+
+    // #region agent log
+    LaunchedEffect(sheetOpen) {
+        AgentDebugLog.log(
+            location = "HomeScreen.kt:LaunchedEffect(sheetOpen)",
+            message = "sheetOpen_changed",
+            hypothesisId = "H1",
+            data = mapOf(
+                "sheetOpen" to sheetOpen,
+                "counterVisible" to counterVisible,
+                "pointerTapEnabled" to !sheetOpen
+            )
+        )
+    }
+    // #endregion
 
     // Gallery picker launcher — persists read URI permission
     val galleryLauncher = rememberLauncherForActivityResult(
@@ -217,7 +231,7 @@ fun HomeScreen(
                     .padding(bottom = 32.dp) // comfortable clearance above system nav bar
             ) {
                 Text(
-                    text = "↑ स्लाइड करें",
+                    text = "↑ स्लाईड करें",
                     style = NaamSmaranTypography.bodySmall,
                     color = TextTertiary,
                     textAlign = TextAlign.Center,
@@ -323,6 +337,11 @@ private fun StreakBadge(streak: Long, format: NumberFormat) {
 /** All 7 devotional sections + Settings for the navigation grid. */
 private data class SectionEntry(val emoji: String, val label: String, val index: Int)
 
+private sealed class BottomSheetNavCell {
+    data class SectionTile(val entry: SectionEntry) : BottomSheetNavCell()
+    data object GalleryTile : BottomSheetNavCell()
+}
+
 private val allSections: List<SectionEntry> = buildList {
     // 7 devotional sections from the single source of truth
     DevotionalSectionId.entries.forEach { section ->
@@ -334,6 +353,12 @@ private val allSections: List<SectionEntry> = buildList {
     }
     // Settings tile at index 7
     add(SectionEntry(emoji = "⚙️", label = "सेटिंग्स", index = 7))
+}
+
+/** Sections + settings + gallery — chunked rows (no capped lazy grid hiding गैलरी). */
+private val bottomSheetNavCells: List<BottomSheetNavCell> = buildList {
+    allSections.forEach { add(BottomSheetNavCell.SectionTile(it)) }
+    add(BottomSheetNavCell.GalleryTile)
 }
 
 /**
@@ -355,85 +380,96 @@ private fun BottomSheetContent(
 ) {
     val remaining = (target - did).coerceAtLeast(0)
 
-    // ── Section header ────────────────────────────────────────────────────
-    Text(
-        text = "राधा नाम जप",
-        style = NaamSmaranTypography.titleMedium,
-        color = OverlayWhiteHigh,
-        fontWeight = FontWeight.SemiBold
-    )
+    // Scroll handled by GlassBottomSheet; keep this as intrinsic-height content.
+    Column(modifier = Modifier.fillMaxWidth()) {
+        // ── Section header ────────────────────────────────────────────────
+        Text(
+            text = "राधा नाम जप",
+            style = NaamSmaranTypography.titleMedium,
+            color = OverlayWhiteHigh,
+            fontWeight = FontWeight.SemiBold
+        )
 
-    Spacer(modifier = Modifier.height(Dimens.Space2))
+        Spacer(modifier = Modifier.height(Dimens.Space2))
 
-    // ── Stats row ─────────────────────────────────────────────────────────
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween
-    ) {
-        StatItem(label = "किया",     value = format.format(did))
-        StatItem(label = "लक्ष्य",   value = format.format(target))
-        StatItem(label = "शेष",      value = format.format(remaining))
-        if (streak > 0) StatItem(label = "अखंडता", value = "${format.format(streak)}d")
-    }
-
-    Spacer(modifier = Modifier.height(Dimens.Space6))
-
-    // ── Quick-add label ───────────────────────────────────────────────────
-    Text(
-        text = "जोड़ें",
-        style = NaamSmaranTypography.labelLarge,
-        color = OverlayWhiteMedium
-    )
-
-    Spacer(modifier = Modifier.height(Dimens.Space3))
-
-    // ── Quick-add buttons ─────────────────────────────────────────────────
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(Dimens.Space3)
-    ) {
-        QuickAddButton(label = "+१०८",   modifier = Modifier.weight(1f)) { onQuickAdd(108) }
-        QuickAddButton(label = "+१,०००", modifier = Modifier.weight(1f)) { onQuickAdd(1_000) }
-        QuickAddButton(label = "+५,०००", modifier = Modifier.weight(1f)) { onQuickAdd(5_000) }
-    }
-
-    Spacer(modifier = Modifier.height(Dimens.Space6))
-
-    // ── Section navigation label ──────────────────────────────────────────
-    Text(
-        text = "अनुभाग",
-        style = NaamSmaranTypography.labelLarge,
-        color = OverlayWhiteMedium
-    )
-
-    Spacer(modifier = Modifier.height(Dimens.Space3))
-
-    // ── 7-section navigation grid (4 columns) ─────────────────────────────
-    LazyVerticalGrid(
-        columns = GridCells.Fixed(4),
-        horizontalArrangement = Arrangement.spacedBy(Dimens.Space2),
-        verticalArrangement = Arrangement.spacedBy(Dimens.Space2),
-        modifier = Modifier.fillMaxWidth()
-    ) {
-        items(allSections) { section ->
-            SectionNavButton(
-                emoji = section.emoji,
-                label = section.label,
-                onClick = { onNavigateToSection(section.index) }
-            )
+        // ── Stats row ─────────────────────────────────────────────────────
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            StatItem(label = "किया", value = format.format(did))
+            StatItem(label = "लक्ष्य", value = format.format(target))
+            StatItem(label = "शेष", value = format.format(remaining))
+            if (streak > 0) StatItem(label = "अखंडता", value = "${format.format(streak)}d")
         }
 
-        // Gallery picker tile at the end
-        item {
-            SectionNavButton(
-                emoji = "🖼️",
-                label = "गैलरी\nजोड़ें",
-                onClick = onAddGalleryImage
-            )
-        }
-    }
+        Spacer(modifier = Modifier.height(Dimens.Space6))
 
-    Spacer(modifier = Modifier.height(Dimens.Space2))
+        // ── Quick-add label ───────────────────────────────────────────────
+        Text(
+            text = "जोड़ें",
+            style = NaamSmaranTypography.labelLarge,
+            color = OverlayWhiteMedium
+        )
+
+        Spacer(modifier = Modifier.height(Dimens.Space3))
+
+        // ── Quick-add buttons ─────────────────────────────────────────────
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(Dimens.Space3)
+        ) {
+            QuickAddButton(label = "+१०८", modifier = Modifier.weight(1f)) { onQuickAdd(108) }
+            QuickAddButton(label = "+१,०००", modifier = Modifier.weight(1f)) { onQuickAdd(1_000) }
+            QuickAddButton(label = "+५,०००", modifier = Modifier.weight(1f)) { onQuickAdd(5_000) }
+        }
+
+        Spacer(modifier = Modifier.height(Dimens.Space6))
+
+        // ── Section navigation label ──────────────────────────────────────
+        Text(
+            text = "अनुभाग",
+            style = NaamSmaranTypography.labelLarge,
+            color = OverlayWhiteMedium
+        )
+
+        Spacer(modifier = Modifier.height(Dimens.Space3))
+
+        // ── Nav grid: 4 columns, all rows measured (गैलरी always reachable) ─
+        bottomSheetNavCells.chunked(4).forEachIndexed { rowIndex, row ->
+            if (rowIndex > 0) {
+                Spacer(modifier = Modifier.height(Dimens.Space2))
+            }
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(Dimens.Space2)
+            ) {
+                row.forEach { cell ->
+                    when (cell) {
+                        is BottomSheetNavCell.SectionTile ->
+                            SectionNavButton(
+                                emoji = cell.entry.emoji,
+                                label = cell.entry.label,
+                                modifier = Modifier.weight(1f),
+                                onClick = { onNavigateToSection(cell.entry.index) }
+                            )
+                        BottomSheetNavCell.GalleryTile ->
+                            SectionNavButton(
+                                emoji = "🖼️",
+                                label = "गैलरी\nजोड़ें",
+                                modifier = Modifier.weight(1f),
+                                onClick = onAddGalleryImage
+                            )
+                    }
+                }
+                repeat(4 - row.size) {
+                    Spacer(modifier = Modifier.weight(1f))
+                }
+            }
+        }
+
+        Spacer(modifier = Modifier.height(Dimens.Space2))
+    }
 }
 
 /** One stat column (value above, label below). */

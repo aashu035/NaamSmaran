@@ -16,6 +16,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import com.radhavallabh.naamsmaran.debug.AgentDebugLog
 import javax.inject.Inject
 
 /**
@@ -89,6 +90,14 @@ class HomeViewModel @Inject constructor(
 
     /** Add [count] naam-jap repetitions and flash the counter. */
     fun addJap(count: Long) {
+        // #region agent log
+        AgentDebugLog.log(
+            location = "HomeViewModel.kt:addJap",
+            message = "addJap_called",
+            hypothesisId = "H2",
+            data = mapOf("count" to count, "counterVisibleBefore" to _counterVisible.value)
+        )
+        // #endregion
         viewModelScope.launch {
             repository.addJapCount(count)
             flashCounter()
@@ -102,6 +111,14 @@ class HomeViewModel @Inject constructor(
      * Re-shows the counter for [COUNTER_VISIBLE_MS] ms.
      */
     fun onBottomSheetDismissed() {
+        // #region agent log
+        AgentDebugLog.log(
+            location = "HomeViewModel.kt:onBottomSheetDismissed",
+            message = "sheet_dismissed_vm",
+            hypothesisId = "H1",
+            data = mapOf("counterVisibleBefore" to _counterVisible.value)
+        )
+        // #endregion
         flashCounter()
     }
 

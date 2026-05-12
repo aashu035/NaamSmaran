@@ -110,6 +110,10 @@ val ProgressTrack      = Color(0x14FFFFFF) // 8% white
 val NavIconInactive    = Color(0x59FFFFFF) // 35% white
 val NavLabelInactive   = Color(0x59FFFFFF) // 35% white
 
+// Glass sheet surfaces — high opacity for readability against any background
+val SurfaceGlassSheet    = Color(0xD9080810) // ~85% opaque deep indigo-black
+val BorderGlassSheet     = Color(0x40FFFFFF) // 25% white — visible edge highlight
+
 // Glass card elevated
 val SurfaceGlassElevated = Color(0x14FFFFFF) // 8% white
 val SurfaceGlassInput    = Color(0x0FFFFFFF) // 6% white

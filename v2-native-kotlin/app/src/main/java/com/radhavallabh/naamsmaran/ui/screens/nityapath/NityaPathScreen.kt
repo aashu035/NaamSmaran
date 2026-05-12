@@ -27,13 +27,13 @@ fun NityaPathScreen(
     onBack: () -> Unit = {}
 ) {
     SectionScaffold(
-        title = "नित्य पाठ",
+        title = "नित्य पाठ रसोपासना",
         emoji = "🪷",
         onBack = onBack
     ) {
         GlassCardColumn {
             Text(
-                text = "🪷 आज का नित्य पाठ",
+                text = "आज का नित्य पाठ",
                 style = NaamSmaranTypography.titleMedium,
                 color = SharadMoonColors.accentPrimary,
                 fontWeight = FontWeight.SemiBold

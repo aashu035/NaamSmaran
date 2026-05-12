@@ -62,4 +62,34 @@ class HapticEngine(context: Context) {
             vibrator.vibrate(20)
         }
     }
+
+    /**
+     * Milestone celebration — used for Day-End target achievement.
+     * Double-pulse pattern: satisfying "success" feel.
+     */
+    fun playMilestoneSuccess() {
+        if (!vibrator.hasVibrator()) return
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            // Android 12+: Composition API for richer haptics
+            vibrator.vibrate(
+                VibrationEffect.startComposition()
+                    .addPrimitive(VibrationEffect.Composition.PRIMITIVE_CLICK, 1.0f)
+                    .addPrimitive(VibrationEffect.Composition.PRIMITIVE_TICK, 0.5f)
+                    .compose()
+            )
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            // Android 8-11: waveform fallback
+            val effect = VibrationEffect.createWaveform(
+                longArrayOf(0, 50, 50, 30),
+                intArrayOf(0, 255, 0, 180),
+                -1
+            )
+            vibrator.vibrate(effect)
+        } else {
+            @Suppress("DEPRECATION")
+            vibrator.vibrate(longArrayOf(0, 50, 50, 30), -1)
+        }
+    }
 }
+

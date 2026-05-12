@@ -31,12 +31,12 @@ fun AshtayamSevaScreen(
 ) {
     SectionScaffold(
         title = "अष्टयाम सेवा",
-        emoji = "🕯️",
+        emoji = "💙💛",
         onBack = onBack
     ) {
         GlassCardColumn {
             Text(
-                text = "🕯️ दैनिक सेवा चेकलिस्ट",
+                text = "अष्टयाम सेवा",
                 style = NaamSmaranTypography.titleMedium,
                 color = SharadMoonColors.accentPrimary,
                 fontWeight = FontWeight.SemiBold
@@ -44,22 +44,33 @@ fun AshtayamSevaScreen(
 
             Spacer(modifier = Modifier.height(12.dp))
 
-            // Seva period checklist
+            // Seva period checklist with timings
             val sevaPeriods = listOf(
-                "मंगला", "श्रृंगार", "ग्वाल", "राज भोग",
-                "उत्थापन", "भोग", "संध्या", "शयन"
+                "मंगला" to "प्रातः ४:३०–५:३०",
+                "श्रृंगार" to "प्रातः ५:३०–७:३०",
+                "ग्वाल" to "प्रातः ७:३०–८:३०",
+                "राज भोग" to "मध्याह्न १०:३०–१२:३०",
+                "उत्थापन" to "दोपहर ३:३०–४:३०",
+                "भोग" to "सायं ५:३०–६:३०",
+                "संध्या" to "सायं ७:३०–८:३०",
+                "शयन" to "रात्रि ९:३०–१०:३०"
             )
 
-            sevaPeriods.forEach { period ->
+            sevaPeriods.forEach { (period, time) ->
                 Text(
-                    text = "☐ $period",
+                    text = "☐  $period",
                     style = NaamSmaranTypography.bodyLarge,
                     color = TextPrimary
                 )
-                Spacer(modifier = Modifier.height(6.dp))
+                Text(
+                    text = "      $time",
+                    style = NaamSmaranTypography.bodySmall,
+                    color = TextSecondary
+                )
+                Spacer(modifier = Modifier.height(8.dp))
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(8.dp))
 
             Text(
                 text = "न्यूनतम ३ सेवा समय प्रतिदिन",

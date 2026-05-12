@@ -29,10 +29,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.radhavallabh.naamsmaran.ui.theme.BorderGlass
+import com.radhavallabh.naamsmaran.ui.theme.BorderGlassFocus
 import com.radhavallabh.naamsmaran.ui.theme.Dimens
 import com.radhavallabh.naamsmaran.ui.theme.NaamSmaranTypography
-import com.radhavallabh.naamsmaran.ui.theme.SurfaceGlass
+import com.radhavallabh.naamsmaran.ui.theme.SurfaceGlassActive
 import com.radhavallabh.naamsmaran.ui.theme.SurfaceGlassHover
 
 /**
@@ -65,12 +65,12 @@ fun SectionNavButton(
         modifier = modifier
             .graphicsLayer { scaleX = scale; scaleY = scale }
             .background(
-                color = if (pressed) SurfaceGlassHover else SurfaceGlass,
+                color = if (pressed) SurfaceGlassHover else SurfaceGlassActive,
                 shape = RoundedCornerShape(16.dp)
             )
             .border(
                 width = 0.5.dp,
-                color = BorderGlass,
+                color = BorderGlassFocus,
                 shape = RoundedCornerShape(16.dp)
             )
             .pointerInput(Unit) {

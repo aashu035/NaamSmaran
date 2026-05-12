@@ -13,8 +13,8 @@ import com.radhavallabh.naamsmaran.ui.screens.kirtan.KirtanScreen
 import com.radhavallabh.naamsmaran.ui.screens.lalita.LalitaScreen
 import com.radhavallabh.naamsmaran.ui.screens.maharas.MaharasScreen
 import com.radhavallabh.naamsmaran.ui.screens.naamjap.NaamJapScreen
-import com.radhavallabh.naamsmaran.ui.screens.nityapath.NityaPathScreen
 import com.radhavallabh.naamsmaran.ui.screens.settings.SettingsScreen
+import com.radhavallabh.naamsmaran.ui.screens.vrindavanlila.VrindavanLilaScreen
 
 /**
  * NaamSmaranApp — Root navigation composable.
@@ -85,14 +85,16 @@ fun NaamSmaranApp(
             AshtayamSevaScreen(onBack = { navController.popBackStack() })
         }
 
-        // ── Section 6: नित्य पाठ रसोपासना (daily toggle) ───────────────
+        // ── Section 6: नित्य पाठ रसोपासना (daily toggle + calendar) ───────────
+        // Note: ChaturdasScreen.kt has the full-featured daily toggle + streak + calendar UI
+        // that matches Section 6's spec. The filename is a legacy artifact.
         composable(Screen.NityaPath.route) {
-            NityaPathScreen(onBack = { navController.popBackStack() })
+            ChaturdasScreen(onBack = { navController.popBackStack() })
         }
 
         // ── Section 7: श्री वृंदावन शत लीला (छंद reading) ──────────────
         composable(Screen.VrindavanLila.route) {
-            ChaturdasScreen(onBack = { navController.popBackStack() })
+            VrindavanLilaScreen(onBack = { navController.popBackStack() })
         }
 
         // ── Settings ──────────────────────────────────────────────────────

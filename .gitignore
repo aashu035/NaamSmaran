@@ -1,41 +1,79 @@
-# IDE
+# ──────────────────────────────────────────────
+# Naam Smaran — .gitignore
+# ──────────────────────────────────────────────
+
+# ── IDE & Editor ──────────────────────────────
 .idea/
 .cursor/
+.vscode/
 *.iml
+*.swp
+*~
 
-# Node
+# ── Android / Gradle ─────────────────────────
+.gradle/
+.gradle-user-home/
+build/
+*/build/
+captures/
+local.properties
+*.hprof
+
+# ── Build Artifacts ──────────────────────────
+*.apk
+*.aab
+*.aar
+*.ap_
+apk/
+
+# ── Signing ──────────────────────────────────
+*.jks
+*.keystore
+*.p12
+google-services.json
+
+# ── Kotlin / JVM ─────────────────────────────
+.kotlin/
+.localappdata/
+
+# ── Node (v0/v1 legacy) ─────────────────────
 node_modules/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+.cache/
+dist/
 
-# Android
-.gradle/
-.gradle-user-home/
-build/
-captures/
-*/build/
-*.apk
-*.aar
-*.jks
-*.keystore
-google-services.json
-
-# Local env
+# ── Environment & Secrets ────────────────────
 .env
-.env.local
+.env.*
+!.env.example
 
-# OS
+# ── OS Artifacts ─────────────────────────────
 .DS_Store
 Thumbs.db
+Desktop.ini
+ehthumbs.db
 
-# Large Media
-# These are too large for GitHub (>3GB total). 
-# Suggesting ignoring them and uploading to a CDN or LFS if needed.
+# ── Large Media (local-only) ─────────────────
+# Video frames (~3GB), rendered videos, raw assets.
+# These live on local disk and OneDrive, not in git.
 frames/
 videos/
 Assets/
 
-# Archived versions (kept if they are small, but ignoring their build artifacts)
-# v0-prototype/
-# v1-react-capacitor/
+# ── Development Notes (local-only) ───────────
+# Planning docs, AI architecture exports, implementation notes.
+# These are workspace artifacts, not source code.
+*.pdf
+implementation_plan.md
+ralph-tasks.md
+review.md
+
+# ── Misc ─────────────────────────────────────
+.android/
+.git_archived/
+.coderabbit.yaml
+naam_smaran/
+*.log
+*.tmp
