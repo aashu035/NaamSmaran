@@ -1,19 +1,25 @@
 package com.radhavallabh.naamsmaran.ui.screens.home
 
+import android.content.Context
 import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.radhavallabh.naamsmaran.data.local.AppSettingsStore
 import com.radhavallabh.naamsmaran.data.local.entity.DailyRecord
 import com.radhavallabh.naamsmaran.data.repository.JapRepository
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.withContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import com.radhavallabh.naamsmaran.debug.AgentDebugLog
@@ -33,10 +39,12 @@ import javax.inject.Inject
  *
  * श्री राधावल्लभ लाल जु की जय 🙏
  */
+@OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val repository: JapRepository,
-    private val settingsStore: AppSettingsStore
+    private val settingsStore: AppSettingsStore,
+    @ApplicationContext private val appContext: Context
 ) : ViewModel() {
 
     companion object {
@@ -66,19 +74,57 @@ class HomeViewModel @Inject constructor(
 
     private var hintDismissJob: Job? = null
 
-    // ── Gallery image URIs (reactive, from DataStore) ────────────────────────
-    val galleryImageUris: StateFlow<List<Uri>> = settingsStore.galleryImageUris
-        .map { uriStrings -> uriStrings.mapNotNull { runCatching { Uri.parse(it) }.getOrNull() } }
+    val greetingName: StateFlow<String> = settingsStore.greetingName
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000),
-            initialValue = emptyList()
+            initialValue = "राधे राधे"
+        )
+
+    val hapticEnabled: StateFlow<Boolean> = settingsStore.hapticEnabled
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = true
+        )
+
+    // ── Gallery image URIs (reactive, from DataStore) ────────────────────────
+    val galleryState: StateFlow<GalleryUiState> = settingsStore.galleryImageUris
+        .mapLatest { uriStrings ->
+            // C1 fix: isReadableUri opens ContentResolver streams — must run on IO thread.
+            withContext(Dispatchers.IO) {
+                val parsed = uriStrings.mapNotNull { raw ->
+                    runCatching { Uri.parse(raw) }.getOrNull()
+                }
+                val readableUris = parsed.filter(::isReadableUri)
+                GalleryUiState(
+                    uris = readableUris,
+                    isLoaded = true
+                )
+            }
+        }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = GalleryUiState()
         )
 
     init {
         // Ensure today's record is seeded from the engine
         viewModelScope.launch {
             repository.ensureTodayRecord()
+        }
+
+        // C1 fix: URI validation (isReadableUri) does IO — launch on Dispatchers.IO.
+        viewModelScope.launch(Dispatchers.IO) {
+            settingsStore.galleryImageUris.collect { uriStrings ->
+                val valid = uriStrings.mapNotNull { raw ->
+                    runCatching { Uri.parse(raw) }.getOrNull()?.takeIf(::isReadableUri)
+                }
+                if (valid.size != uriStrings.size) {
+                    settingsStore.setGalleryImageUris(valid.map(Uri::toString))
+                }
+            }
         }
 
         // Auto-dismiss swipe hint after 5 seconds
@@ -156,4 +202,14 @@ class HomeViewModel @Inject constructor(
             _counterVisible.value = false
         }
     }
+
+    private fun isReadableUri(uri: Uri): Boolean = runCatching {
+        appContext.contentResolver.openInputStream(uri)?.use { input -> input.read() }
+        true
+    }.getOrDefault(false)
 }
+
+data class GalleryUiState(
+    val uris: List<Uri> = emptyList(),
+    val isLoaded: Boolean = false
+)

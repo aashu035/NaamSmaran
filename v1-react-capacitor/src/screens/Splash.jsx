@@ -58,7 +58,7 @@ export default function Splash({ onComplete }) {
       </div>
 
       <div className="splash-content">
-        <h1 className="splash-title">राधे राधे</h1>
+        <h1 className="splash-title">राधावल्लभ श्री हरिवंश</h1>
         <div className="splash-subtitle">नाम स्मरण</div>
       </div>
     </div>

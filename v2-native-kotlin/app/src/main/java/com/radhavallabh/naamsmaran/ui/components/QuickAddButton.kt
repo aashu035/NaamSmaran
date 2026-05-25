@@ -7,8 +7,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
@@ -59,6 +58,7 @@ fun QuickAddButton(
     Box(
         modifier = modifier
             .graphicsLayer { scaleX = scale; scaleY = scale }
+            .defaultMinSize(minHeight = 56.dp)
             .background(
                 color = SurfaceGlassActive,
                 shape = RoundedCornerShape(16.dp)
@@ -78,7 +78,7 @@ fun QuickAddButton(
                     onTap = { onClick() }
                 )
             }
-            .padding(vertical = 14.dp),
+            .padding(horizontal = Dimens.Space4, vertical = 14.dp),
         contentAlignment = Alignment.Center
     ) {
         Text(

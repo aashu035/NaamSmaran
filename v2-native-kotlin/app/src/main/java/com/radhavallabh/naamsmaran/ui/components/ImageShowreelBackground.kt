@@ -164,7 +164,8 @@ fun ImageShowreelBackground(
                         brush = Brush.verticalGradient(
                             colorStops = arrayOf(
                                 0.0f to OverlayScrimLight,                // subtle top scrim
-                                0.45f to Color.Transparent,               // clear window in middle
+                                0.42f to Color.Transparent,               // clear window above the focal text
+                                0.58f to OverlayScrimLight,               // light center veil for text legibility
                                 0.70f to OverlayScrimHeavy,               // darkening begins
                                 1.0f to OverlayScrimDense                 // near-opaque bottom
                             )

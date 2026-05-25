@@ -36,12 +36,25 @@ object Dimens {
     // ═══════════════════════════════════════════════════════════
     // PROGRESS / VISUALIZATION
     // ═══════════════════════════════════════════════════════════
-    val RingSizeLarge    = 140.dp      // main Naam Jap progress ring
+    val RingSizeLarge    = 180.dp      // main Naam Jap progress ring
     val RingSizeMedium   = 80.dp       // section summary rings
-    val RingStrokeLarge  = 8.dp
+    val RingStrokeLarge  = 10.dp
     val RingStrokeMedium = 5.dp
     val BarHeight        = 6.dp        // standard progress bar
     val BarHeightThick   = 10.dp       // Chaturasi pad progress
+
+    // Home dashboard
+    val SheetSwipeThreshold = 120.dp
+    val SwipeHintBottomPadding = Space8
+    val SheetCornerRadius = Space7
+    val SheetHandleWidth = Space8 + Space1
+
+    // U2 fix: 0.22 left quick-add buttons half-cut. 0.52 reveals ~48% of screen height
+    //          which comfortably fits the handle + section header + 3 quick-add buttons.
+    const val SheetHiddenOffsetFraction = 0.92f
+    const val SheetQuickActionsOffsetFraction = 0.52f
+    const val SheetFullGridOffsetFraction = 0.08f
+    const val SheetDragThresholdFraction = 0.08f
 
     // ═══════════════════════════════════════════════════════════
     // GLASS CARD — blur radius

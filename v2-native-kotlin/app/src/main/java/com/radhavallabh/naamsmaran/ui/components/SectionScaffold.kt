@@ -32,8 +32,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.radhavallabh.naamsmaran.ui.theme.BorderGlass
 import com.radhavallabh.naamsmaran.ui.theme.Dimens
+import com.radhavallabh.naamsmaran.ui.theme.LocalNaamSmaranColors
 import com.radhavallabh.naamsmaran.ui.theme.NaamSmaranTypography
-import com.radhavallabh.naamsmaran.ui.theme.SharadMoonColors
 import com.radhavallabh.naamsmaran.ui.theme.SurfaceGlass
 import com.radhavallabh.naamsmaran.ui.theme.SurfaceGlassElevated
 import com.radhavallabh.naamsmaran.ui.theme.TextPrimary
@@ -53,19 +53,21 @@ import com.radhavallabh.naamsmaran.ui.theme.TextSecondary
 @Composable
 fun SectionScaffold(
     title: String,
-    emoji: String,
+    emoji: String? = null,
     onBack: () -> Unit,
     content: @Composable ColumnScope.() -> Unit
 ) {
+    val colors = LocalNaamSmaranColors.current
+
     Box(
         modifier = Modifier
             .fillMaxSize()
             .background(
                 brush = Brush.verticalGradient(
                     colors = listOf(
-                        SharadMoonColors.bgPrimary,
-                        SharadMoonColors.bgPrimary.copy(alpha = 0.95f),  // deeper indigo mid
-                        SharadMoonColors.bgPrimary
+                        colors.bgPrimary,
+                        colors.bgPrimary.copy(alpha = 0.95f),
+                        colors.bgPrimary
                     )
                 )
             )
@@ -103,9 +105,10 @@ fun SectionScaffold(
 
                 Spacer(modifier = Modifier.width(Dimens.Space4))
 
-                // Section emoji + title
-                Text(text = emoji, fontSize = 22.sp)
-                Spacer(modifier = Modifier.width(Dimens.Space2))
+                if (!emoji.isNullOrBlank()) {
+                    Text(text = emoji, fontSize = 22.sp)
+                    Spacer(modifier = Modifier.width(Dimens.Space2))
+                }
                 Text(
                     text = title,
                     style = NaamSmaranTypography.titleLarge,

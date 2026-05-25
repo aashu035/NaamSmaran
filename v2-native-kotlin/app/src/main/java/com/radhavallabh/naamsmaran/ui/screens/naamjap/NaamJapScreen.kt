@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
@@ -39,8 +40,8 @@ import com.radhavallabh.naamsmaran.ui.components.StatRow
 import com.radhavallabh.naamsmaran.ui.screens.home.HomeViewModel
 import com.radhavallabh.naamsmaran.ui.theme.BorderGlass
 import com.radhavallabh.naamsmaran.ui.theme.Dimens
+import com.radhavallabh.naamsmaran.ui.theme.LocalNaamSmaranColors
 import com.radhavallabh.naamsmaran.ui.theme.NaamSmaranTypography
-import com.radhavallabh.naamsmaran.ui.theme.SharadMoonColors
 import com.radhavallabh.naamsmaran.ui.theme.StateExceeded
 import com.radhavallabh.naamsmaran.ui.theme.StatePartial
 import com.radhavallabh.naamsmaran.ui.theme.SurfaceGlassInput
@@ -68,6 +69,7 @@ fun NaamJapScreen(
 ) {
     val record by viewModel.todayRecord.collectAsState()
     val format = NumberFormat.getNumberInstance(Locale.forLanguageTag("en-IN"))
+    val colors = LocalNaamSmaranColors.current
 
     val did = record?.did ?: 0L
     val target = record?.target ?: 21_600L
@@ -88,7 +90,7 @@ fun NaamJapScreen(
             Text(
                 text = "🌸 राधा नाम जप — Track B",
                 style = NaamSmaranTypography.titleMedium,
-                color = SharadMoonColors.accentPrimary,
+                color = colors.accentPrimary,
                 fontWeight = FontWeight.SemiBold
             )
             Spacer(modifier = Modifier.height(Dimens.Space4))
@@ -126,7 +128,7 @@ fun NaamJapScreen(
                         .height(Dimens.BarHeight)
                         .clip(RoundedCornerShape(3.dp))
                         .background(
-                            if (isComplete) StateExceeded else SharadMoonColors.accentPrimary
+                            if (isComplete) StateExceeded else colors.accentPrimary
                         )
                 )
             }
@@ -200,21 +202,23 @@ fun NaamJapScreen(
                             }
                         }
                     ),
-                    modifier = Modifier.weight(1f),
+                    modifier = Modifier
+                        .weight(1f)
+                        .heightIn(min = 56.dp),
                     singleLine = true,
                     colors = OutlinedTextFieldDefaults.colors(
                         focusedTextColor = TextPrimary,
                         unfocusedTextColor = TextPrimary,
-                        focusedBorderColor = SharadMoonColors.accentPrimary,
+                        focusedBorderColor = colors.accentPrimary,
                         unfocusedBorderColor = BorderGlass,
-                        cursorColor = SharadMoonColors.accentPrimary,
+                        cursorColor = colors.accentPrimary,
                         focusedContainerColor = SurfaceGlassInput,
                         unfocusedContainerColor = SurfaceGlassInput
                     )
                 )
                 QuickAddButton(
                     label = "जोड़ें",
-                    modifier = Modifier
+                    modifier = Modifier.height(56.dp)
                 ) {
                     val count = manualInput.toLongOrNull() ?: 0L
                     if (count > 0) {
@@ -232,7 +236,7 @@ fun NaamJapScreen(
             Text(
                 text = "📿 हरिवंश नाम जप — Track A",
                 style = NaamSmaranTypography.titleMedium,
-                color = SharadMoonColors.accentSecondary,
+                color = colors.accentSecondary,
                 fontWeight = FontWeight.SemiBold
             )
             Spacer(modifier = Modifier.height(Dimens.Space3))

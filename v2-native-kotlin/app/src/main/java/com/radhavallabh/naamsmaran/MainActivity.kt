@@ -8,11 +8,15 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.lifecycleScope
 import com.radhavallabh.naamsmaran.data.local.AppSettingsStore
+import com.radhavallabh.naamsmaran.platform.AppAlarmScheduler
 import com.radhavallabh.naamsmaran.ui.navigation.NaamSmaranApp
 import com.radhavallabh.naamsmaran.ui.theme.NaamSmaranTheme
 import com.radhavallabh.naamsmaran.ui.theme.NaamSmaranThemeId
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 /**
@@ -30,9 +34,29 @@ class MainActivity : ComponentActivity() {
     @Inject
     lateinit var settingsStore: AppSettingsStore
 
+    @Inject
+    lateinit var alarmScheduler: AppAlarmScheduler
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+
+        lifecycleScope.launch {
+            if (settingsStore.dailyReminderEnabled.first()) {
+                alarmScheduler.scheduleDailyReminder(
+                    settingsStore.dailyReminderHour.first(),
+                    settingsStore.dailyReminderMinute.first()
+                )
+            } else {
+                alarmScheduler.cancelDailyReminder()
+            }
+
+            if (settingsStore.autoBackupEnabled.first()) {
+                alarmScheduler.scheduleAutoBackup()
+            } else {
+                alarmScheduler.cancelAutoBackup()
+            }
+        }
 
         setContent {
             val themeId by settingsStore.activeTheme

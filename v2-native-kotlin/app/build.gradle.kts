@@ -54,6 +54,7 @@ android {
 
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 
 }
@@ -100,6 +101,9 @@ dependencies {
 
     // Image loading (gallery images in showreel)
     implementation(libs.coil.compose)
+
+    // JSON backup codec
+    implementation(libs.gson)
 
     // Testing
     testImplementation("junit:junit:4.13.2")

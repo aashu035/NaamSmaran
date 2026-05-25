@@ -8,7 +8,7 @@ const DEFAULT_SETTINGS = {
   id: 1,
   activeTheme: "sharad-moon",
   chosenMantraText: "राधा",
-  deityDisplayName: "राधे राधे",
+  deityDisplayName: "जय जय श्री हित हरिवंश",
   fontStyle: "traditional",
   backgroundMode: "3d",
   backgroundImageCustom: "",
@@ -77,21 +77,21 @@ export const useAppStore = create((set, get) => ({
 
     // 2. Load or Create Today's Record
     await get().loadTodayRecord();
-    
+
     set({ isLoaded: true });
   },
 
   loadTodayRecord: async () => {
     const { settings } = get();
     const todayStr = getSpiritualDate(new Date(), settings.dayBoundaryHour);
-    
+
     let record = await getRecord('DailyRecord', todayStr);
-    
+
     if (!record) {
       // Need to find the last known record to compute missed days
       const allRecords = await getAllRecords('DailyRecord');
       allRecords.sort((a, b) => a.id.localeCompare(b.id)); // sort chronologically
-      
+
       let lastTarget = settings.initialTarget;
       let lastStreak = 0;
       let lastDateObj = null;
@@ -107,17 +107,17 @@ export const useAppStore = create((set, get) => ({
       if (lastDateObj) {
         let currentDate = new Date(lastDateObj);
         currentDate.setDate(currentDate.getDate() + 1);
-        
+
         const todayDateObj = new Date(todayStr);
-        
+
         while (currentDate < todayDateObj) {
           const gapStr = currentDate.toISOString().split('T')[0];
           const gapRecord = createEmptyRecord(gapStr, lastTarget);
           gapRecord.streakCount = 0; // missed day means streak is 0
           gapRecord.nextDayTarget = calculateNextTarget(lastTarget, 0, settings.targetIncrement);
-          
+
           await putRecord('DailyRecord', gapRecord);
-          
+
           lastTarget = gapRecord.nextDayTarget;
           lastStreak = 0;
           currentDate.setDate(currentDate.getDate() + 1);
@@ -126,10 +126,10 @@ export const useAppStore = create((set, get) => ({
 
       record = createEmptyRecord(todayStr, lastTarget);
       record.streakCount = calculateStreak(lastStreak, lastTarget, 0); // At 0 count, streak is 0 unless target is 0?
-      
+
       await putRecord('DailyRecord', record);
     }
-    
+
     set({ todayRecord: record });
   },
 
@@ -143,10 +143,10 @@ export const useAppStore = create((set, get) => ({
     const { todayRecord, settings } = get();
     if (!todayRecord) return;
 
-    const newRecord = { 
-      ...todayRecord, 
-      ...updates, 
-      updatedAt: Date.now() 
+    const newRecord = {
+      ...todayRecord,
+      ...updates,
+      updatedAt: Date.now()
     };
 
     // Auto-check checkNaamJap if did > 0
@@ -157,7 +157,7 @@ export const useAppStore = create((set, get) => ({
     // Determine current streak dynamically (for UI rendering if needed)
     // Actually, streakCount is updated at end of day, but we can compute it live.
     // Wait, AGENTS.md says streakCount is stored for fast reads. We need previous day's streak.
-    
+
     await putRecord('DailyRecord', newRecord);
     set({ todayRecord: newRecord });
   },
@@ -165,7 +165,7 @@ export const useAppStore = create((set, get) => ({
   addJapCount: async (amount) => {
     const { todayRecord } = get();
     if (!todayRecord) return;
-    
+
     await get().updateTodayRecord({ did: todayRecord.did + amount });
   },
 

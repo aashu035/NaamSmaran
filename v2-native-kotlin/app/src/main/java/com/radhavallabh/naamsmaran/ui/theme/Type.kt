@@ -50,7 +50,7 @@ val NaamSmaranTypography = Typography(
         letterSpacing = (-0.02).sp
     ),
 
-    // Sub-hero — resting "राधे राधे" hint text
+    // Sub-hero — resting "जय जय श्री हित हरिवंश" hint text
     displaySmall = TextStyle(
         fontFamily = DevanagariDeco,
         fontWeight = FontWeight.W400,

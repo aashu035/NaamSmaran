@@ -1,5 +1,8 @@
 package com.radhavallabh.naamsmaran.ui.screens.settings
 
+import android.app.TimePickerDialog
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -11,127 +14,131 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.radhavallabh.naamsmaran.BuildConfig
 import com.radhavallabh.naamsmaran.ui.components.GlassCardColumn
 import com.radhavallabh.naamsmaran.ui.components.SectionScaffold
 import com.radhavallabh.naamsmaran.ui.theme.BorderGlass
 import com.radhavallabh.naamsmaran.ui.theme.Dimens
+import com.radhavallabh.naamsmaran.ui.theme.LocalNaamSmaranColors
+import com.radhavallabh.naamsmaran.ui.theme.NaamSmaranThemeId
 import com.radhavallabh.naamsmaran.ui.theme.NaamSmaranTypography
-import com.radhavallabh.naamsmaran.ui.theme.SharadMoonColors
 import com.radhavallabh.naamsmaran.ui.theme.SurfaceGlassInput
 import com.radhavallabh.naamsmaran.ui.theme.TextPrimary
 import com.radhavallabh.naamsmaran.ui.theme.TextSecondary
 import com.radhavallabh.naamsmaran.ui.theme.TextTertiary
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+import java.util.Locale
 
-/**
- * SettingsScreen — App Configuration
- *
- * Contains:
- * - Theme switcher (future: Sharad Moon, Vrindavan Spring, Yamuna Night)
- * - Daily reminder toggle + time picker
- * - Initial Naam Jap target (configurable)
- * - Backup / export options
- * - App info
- *
- * श्री राधावल्लभ लाल जु की जय 🙏
- */
 @Composable
-fun SettingsScreen(onBack: () -> Unit) {
+fun SettingsScreen(
+    onBack: () -> Unit,
+    viewModel: SettingsViewModel = hiltViewModel()
+) {
+    val uiState by viewModel.uiState.collectAsState()
+    val context = LocalContext.current
+    val colors = LocalNaamSmaranColors.current
 
-    var dailyReminderEnabled by remember { mutableStateOf(true) }
-    var hapticEnabled by remember { mutableStateOf(true) }
-    var autoBackupEnabled by remember { mutableStateOf(false) }
+    val exportLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.CreateDocument("application/json")
+    ) { uri ->
+        if (uri != null) {
+            viewModel.exportBackup(uri)
+        }
+    }
+
+    val restoreLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.OpenDocument()
+    ) { uri ->
+        if (uri != null) {
+            viewModel.restoreBackup(uri)
+        }
+    }
+
+    val timeText = remember(uiState.dailyReminderHour, uiState.dailyReminderMinute) {
+        String.format(Locale.ENGLISH, "%02d:%02d", uiState.dailyReminderHour, uiState.dailyReminderMinute)
+    }
+    val lastBackupText = uiState.lastBackupAt?.let { "अंतिम बैकअप: $it" } ?: "अभी तक बैकअप नहीं"
 
     SectionScaffold(
         title = "सेटिंग्स",
         emoji = "⚙️",
         onBack = onBack
     ) {
-
-        // ── Theme Settings ──────────────────────────────────────────────────
         GlassCardColumn {
             Text(
-                text = "🎨 थीम",
+                text = "थीम",
                 style = NaamSmaranTypography.titleSmall,
-                color = SharadMoonColors.accentPrimary,
+                color = colors.accentPrimary,
                 fontWeight = FontWeight.SemiBold
             )
             Spacer(modifier = Modifier.height(Dimens.Space3))
 
-            listOf(
-                Triple("🌸", "शरद मून", true),
-                Triple("🌿", "वृंदावन स्प्रिंग", false),
-                Triple("🌊", "यमुना नाइट", false)
-            ).forEach { (emoji, name, isSelected) ->
+            NaamSmaranThemeId.entries.forEach { theme ->
+                val isSelected = uiState.activeTheme == theme
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .clip(RoundedCornerShape(12.dp))
                         .background(
-                            if (isSelected) SharadMoonColors.accentPrimary.copy(alpha = 0.15f)
-                            else Color.Transparent
+                            if (isSelected) colors.accentPrimary.copy(alpha = 0.15f) else SurfaceGlassInput,
+                            RoundedCornerShape(Dimens.Space3)
                         )
                         .border(
-                            1.dp,
-                            if (isSelected) SharadMoonColors.accentPrimary.copy(alpha = 0.6f) else BorderGlass,
-                            RoundedCornerShape(12.dp)
+                            width = Dimens.Space1 / 4,
+                            color = if (isSelected) colors.accentPrimary.copy(alpha = 0.6f) else BorderGlass,
+                            shape = RoundedCornerShape(Dimens.Space3)
                         )
-                        .clickable { /* theme switch logic */ }
+                        .clickable { viewModel.setTheme(theme) }
                         .padding(Dimens.Space3),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Row(
-                        horizontalArrangement = Arrangement.spacedBy(Dimens.Space2),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(text = emoji, fontSize = 20.sp)
+                    Column {
                         Text(
-                            text = name,
+                            text = theme.displayNameHindi,
                             style = NaamSmaranTypography.bodyMedium,
-                            color = if (isSelected) SharadMoonColors.accentPrimary else TextSecondary,
+                            color = if (isSelected) colors.accentPrimary else TextPrimary,
                             fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Normal
+                        )
+                        Text(
+                            text = theme.displayName,
+                            style = NaamSmaranTypography.bodySmall,
+                            color = TextTertiary
                         )
                     }
                     if (isSelected) {
-                        Text(text = "✓", color = SharadMoonColors.accentPrimary, fontSize = 16.sp)
+                        Text(
+                            text = "✓",
+                            color = colors.accentPrimary,
+                            fontWeight = FontWeight.Bold
+                        )
                     }
                 }
                 Spacer(modifier = Modifier.height(Dimens.Space2))
             }
-
-            Spacer(modifier = Modifier.height(Dimens.Space2))
-            Text(
-                text = "अन्य थीम शीघ्र आएंगी",
-                style = NaamSmaranTypography.bodySmall,
-                color = TextTertiary
-            )
         }
 
         Spacer(modifier = Modifier.height(Dimens.GapStack))
 
-        // ── Notifications ───────────────────────────────────────────────────
         GlassCardColumn {
             Text(
-                text = "🔔 सूचनाएं",
+                text = "सूचनाएं",
                 style = NaamSmaranTypography.titleSmall,
-                color = SharadMoonColors.accentPrimary,
+                color = colors.accentPrimary,
                 fontWeight = FontWeight.SemiBold
             )
             Spacer(modifier = Modifier.height(Dimens.Space3))
@@ -139,20 +146,26 @@ fun SettingsScreen(onBack: () -> Unit) {
             SettingsToggleRow(
                 label = "दैनिक स्मरण",
                 subLabel = "प्रतिदिन नाम जप याद दिलाएं",
-                checked = dailyReminderEnabled,
-                onCheckedChange = { dailyReminderEnabled = it }
+                checked = uiState.dailyReminderEnabled,
+                onCheckedChange = viewModel::setDailyReminderEnabled
             )
 
-            Spacer(modifier = Modifier.height(Dimens.Space3))
-
-            // Reminder time (placeholder)
-            if (dailyReminderEnabled) {
+            if (uiState.dailyReminderEnabled) {
+                Spacer(modifier = Modifier.height(Dimens.Space3))
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .clip(RoundedCornerShape(12.dp))
-                        .background(SurfaceGlassInput)
-                        .border(1.dp, BorderGlass, RoundedCornerShape(12.dp))
+                        .background(SurfaceGlassInput, RoundedCornerShape(Dimens.Space3))
+                        .border(Dimens.Space1 / 4, BorderGlass, RoundedCornerShape(Dimens.Space3))
+                        .clickable {
+                            TimePickerDialog(
+                                context,
+                                { _, hour, minute -> viewModel.setDailyReminderTime(hour, minute) },
+                                uiState.dailyReminderHour,
+                                uiState.dailyReminderMinute,
+                                false
+                            ).show()
+                        }
                         .padding(Dimens.Space3),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
@@ -164,7 +177,7 @@ fun SettingsScreen(onBack: () -> Unit) {
                             color = TextTertiary
                         )
                         Text(
-                            text = "06:00 AM",
+                            text = timeText,
                             style = NaamSmaranTypography.bodyMedium,
                             color = TextPrimary,
                             fontWeight = FontWeight.SemiBold
@@ -173,8 +186,7 @@ fun SettingsScreen(onBack: () -> Unit) {
                     Text(
                         text = "बदलें",
                         style = NaamSmaranTypography.labelMedium,
-                        color = SharadMoonColors.accentPrimary,
-                        modifier = Modifier.clickable { /* open time picker */ }
+                        color = colors.accentPrimary
                     )
                 }
             }
@@ -182,12 +194,11 @@ fun SettingsScreen(onBack: () -> Unit) {
 
         Spacer(modifier = Modifier.height(Dimens.GapStack))
 
-        // ── Preferences ─────────────────────────────────────────────────────
         GlassCardColumn {
             Text(
-                text = "🛠️ प्राथमिकताएं",
+                text = "प्राथमिकताएं",
                 style = NaamSmaranTypography.titleSmall,
-                color = SharadMoonColors.accentPrimary,
+                color = colors.accentPrimary,
                 fontWeight = FontWeight.SemiBold
             )
             Spacer(modifier = Modifier.height(Dimens.Space3))
@@ -195,22 +206,19 @@ fun SettingsScreen(onBack: () -> Unit) {
             SettingsToggleRow(
                 label = "हैप्टिक फीडबैक",
                 subLabel = "बटन दबाने पर कंपन",
-                checked = hapticEnabled,
-                onCheckedChange = { hapticEnabled = it }
+                checked = uiState.hapticEnabled,
+                onCheckedChange = viewModel::setHapticEnabled
             )
 
             Spacer(modifier = Modifier.height(Dimens.Space3))
 
-            // Initial target setting (placeholder)
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .clip(RoundedCornerShape(12.dp))
-                    .background(SurfaceGlassInput)
-                    .border(1.dp, BorderGlass, RoundedCornerShape(12.dp))
+                    .background(SurfaceGlassInput, RoundedCornerShape(Dimens.Space3))
+                    .border(Dimens.Space1 / 4, BorderGlass, RoundedCornerShape(Dimens.Space3))
                     .padding(Dimens.Space3),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+                horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Column {
                     Text(
@@ -220,14 +228,14 @@ fun SettingsScreen(onBack: () -> Unit) {
                     )
                     Text(
                         text = "Track B — राधा नाम जप",
-                        style = NaamSmaranTypography.labelSmall,
+                        style = NaamSmaranTypography.bodySmall,
                         color = TextTertiary
                     )
                 }
                 Text(
-                    text = "२१,६००",
+                    text = formatIndian(uiState.initialTarget),
                     style = NaamSmaranTypography.bodyMedium,
-                    color = SharadMoonColors.accentPrimary,
+                    color = colors.accentPrimary,
                     fontWeight = FontWeight.SemiBold
                 )
             }
@@ -235,53 +243,59 @@ fun SettingsScreen(onBack: () -> Unit) {
 
         Spacer(modifier = Modifier.height(Dimens.GapStack))
 
-        // ── Data & Backup ────────────────────────────────────────────────────
         GlassCardColumn {
             Text(
-                text = "💾 डेटा और बैकअप",
+                text = "डेटा और बैकअप",
                 style = NaamSmaranTypography.titleSmall,
-                color = SharadMoonColors.accentPrimary,
+                color = colors.accentPrimary,
                 fontWeight = FontWeight.SemiBold
             )
             Spacer(modifier = Modifier.height(Dimens.Space3))
 
             SettingsToggleRow(
                 label = "स्वत: बैकअप",
-                subLabel = "प्रतिदिन JSON बैकअप सहेजें",
-                checked = autoBackupEnabled,
-                onCheckedChange = { autoBackupEnabled = it }
+                subLabel = "प्रतिदिन स्थानीय JSON बैकअप सहेजें",
+                checked = uiState.autoBackupEnabled,
+                onCheckedChange = viewModel::setAutoBackupEnabled
+            )
+
+            Spacer(modifier = Modifier.height(Dimens.Space2))
+            Text(
+                text = lastBackupText,
+                style = NaamSmaranTypography.bodySmall,
+                color = TextTertiary
             )
 
             Spacer(modifier = Modifier.height(Dimens.Space3))
 
-            // Export button
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clip(RoundedCornerShape(12.dp))
-                    .background(SharadMoonColors.accentPrimary.copy(alpha = 0.1f))
-                    .border(1.dp, SharadMoonColors.accentPrimary.copy(alpha = 0.4f), RoundedCornerShape(12.dp))
-                    .clickable { /* export data */ }
-                    .padding(Dimens.Space3),
-                contentAlignment = Alignment.Center
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(Dimens.Space3)
             ) {
-                Text(
-                    text = "📤 डेटा निर्यात करें",
-                    style = NaamSmaranTypography.bodyMedium,
-                    color = SharadMoonColors.accentPrimary,
-                    fontWeight = FontWeight.SemiBold
-                )
+                ActionButton(
+                    label = "डेटा निर्यात करें",
+                    modifier = Modifier.weight(1f)
+                ) {
+                    val today = LocalDate.now().format(DateTimeFormatter.ISO_DATE)
+                    exportLauncher.launch("naam-smaran-backup-$today.json")
+                }
+
+                ActionButton(
+                    label = "डेटा पुनर्स्थापित करें",
+                    modifier = Modifier.weight(1f)
+                ) {
+                    restoreLauncher.launch(arrayOf("application/json"))
+                }
             }
         }
 
         Spacer(modifier = Modifier.height(Dimens.GapStack))
 
-        // ── App Info ─────────────────────────────────────────────────────────
         GlassCardColumn {
             Text(
-                text = "ℹ️ एप के बारे में",
+                text = "एप के बारे में",
                 style = NaamSmaranTypography.titleSmall,
-                color = SharadMoonColors.accentSecondary,
+                color = colors.accentSecondary,
                 fontWeight = FontWeight.SemiBold
             )
             Spacer(modifier = Modifier.height(Dimens.Space3))
@@ -292,7 +306,7 @@ fun SettingsScreen(onBack: () -> Unit) {
                 fontWeight = FontWeight.Bold
             )
             Text(
-                text = "संस्करण 2.0.0-darshan",
+                text = "संस्करण ${BuildConfig.VERSION_NAME}",
                 style = NaamSmaranTypography.bodySmall,
                 color = TextSecondary
             )
@@ -308,9 +322,6 @@ fun SettingsScreen(onBack: () -> Unit) {
     }
 }
 
-/**
- * Reusable toggle row for settings.
- */
 @Composable
 private fun SettingsToggleRow(
     label: String,
@@ -318,6 +329,8 @@ private fun SettingsToggleRow(
     checked: Boolean,
     onCheckedChange: (Boolean) -> Unit
 ) {
+    val colors = LocalNaamSmaranColors.current
+
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -339,11 +352,39 @@ private fun SettingsToggleRow(
             checked = checked,
             onCheckedChange = onCheckedChange,
             colors = SwitchDefaults.colors(
-                checkedThumbColor = SharadMoonColors.accentPrimary,
-                checkedTrackColor = SharadMoonColors.accentPrimary.copy(alpha = 0.35f),
+                checkedThumbColor = colors.accentPrimary,
+                checkedTrackColor = colors.accentPrimary.copy(alpha = 0.35f),
                 uncheckedThumbColor = TextTertiary,
                 uncheckedTrackColor = SurfaceGlassInput
             )
         )
     }
 }
+
+@Composable
+private fun ActionButton(
+    label: String,
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit
+) {
+    val colors = LocalNaamSmaranColors.current
+
+    Box(
+        modifier = modifier
+            .background(colors.accentPrimary.copy(alpha = 0.1f), RoundedCornerShape(Dimens.Space3))
+            .border(Dimens.Space1 / 4, colors.accentPrimary.copy(alpha = 0.4f), RoundedCornerShape(Dimens.Space3))
+            .clickable(onClick = onClick)
+            .padding(Dimens.Space3),
+        contentAlignment = Alignment.Center
+    ) {
+        Text(
+            text = label,
+            style = NaamSmaranTypography.bodyMedium,
+            color = colors.accentPrimary,
+            fontWeight = FontWeight.SemiBold
+        )
+    }
+}
+
+private fun formatIndian(value: Long): String =
+    java.text.NumberFormat.getNumberInstance(Locale.forLanguageTag("en-IN")).format(value)

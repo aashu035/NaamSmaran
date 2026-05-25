@@ -51,7 +51,7 @@ enum class DevotionalSectionId(
     /** Section 3 — श्री हित राधा सुधानिधी जी (reading with meaning, carry-over) */
     SUDHANIDHI(
         sectionNumber = 3,
-        hindiName = "श्री हित राधा सुधानिधी जी",
+        hindiName = "श्री हित राधा सुधानिधी जी स्तोत्र",
         shortLabel = "सुधानिधी\nजी",
         emoji = "🌸",
         route = "section/sudhanidhi"
@@ -71,7 +71,7 @@ enum class DevotionalSectionId(
         sectionNumber = 5,
         hindiName = "अष्टयाम सेवा पद्धति",
         shortLabel = "अष्टयाम\nसेवा",
-        emoji = "🕯️",
+        emoji = "",
         route = "section/ashtayamseva"
     ),
 
@@ -80,7 +80,7 @@ enum class DevotionalSectionId(
         sectionNumber = 6,
         hindiName = "नित्य पाठ रसोपासना",
         shortLabel = "नित्य\nपाठ",
-        emoji = "🪷",
+        emoji = "",
         route = "section/nityapath"
     ),
 
@@ -89,7 +89,7 @@ enum class DevotionalSectionId(
         sectionNumber = 7,
         hindiName = "श्री वृंदावन शत लीला",
         shortLabel = "वृंदावन\nशत लीला",
-        emoji = "🛕",
+        emoji = "",
         route = "section/vrindavanlila"
     );
 

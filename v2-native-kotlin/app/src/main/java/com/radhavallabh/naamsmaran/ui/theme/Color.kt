@@ -110,8 +110,8 @@ val ProgressTrack      = Color(0x14FFFFFF) // 8% white
 val NavIconInactive    = Color(0x59FFFFFF) // 35% white
 val NavLabelInactive   = Color(0x59FFFFFF) // 35% white
 
-// Glass sheet surfaces — high opacity for readability against any background
-val SurfaceGlassSheet    = Color(0xD9080810) // ~85% opaque deep indigo-black
+// Glass sheet surfaces — translucent glassmorphism (U5 fix: was 0xD9=85%, now 0x99=60%)
+val SurfaceGlassSheet    = Color(0x99080810) // ~60% opaque deep indigo-black — glass effect
 val BorderGlassSheet     = Color(0x40FFFFFF) // 25% white — visible edge highlight
 
 // Glass card elevated
@@ -129,3 +129,18 @@ val OverlayScrimLight    = Color(0x40000000) // 25% black — top scrim
 val OverlayScrimMedium   = Color(0x73000000) // 45% black — counter backdrop
 val OverlayScrimHeavy    = Color(0x8C000000) // 55% black — gradient mid
 val OverlayScrimDense    = Color(0xE0000000) // 88% black — gradient bottom
+
+// Home dashboard accent overlays — keep premium glass accents centralized.
+object DashboardAlpha {
+    const val RingTrack = 0.08f
+    const val SummaryBorder = 0.26f
+    const val GhostButtonBorder = 0.75f
+    const val HeaderPillBackground = 0.14f
+    const val HeaderPillBorder = 0.32f
+    const val SectionCompleteBackground = 0.08f
+    const val SectionCompleteBorder = 0.22f
+    const val SectionMarkerBackground = 0.13f
+    const val SectionMarkerBorder = 0.35f
+    const val ActivePillBackground = 0.15f
+    const val ActivePillBorder = 0.42f
+}

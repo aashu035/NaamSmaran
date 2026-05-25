@@ -24,6 +24,9 @@ interface DailyRecordDao {
     @Query("SELECT * FROM daily_records ORDER BY date DESC")
     fun getAllRecords(): Flow<List<DailyRecord>>
 
+    @Query("SELECT * FROM daily_records ORDER BY date ASC")
+    suspend fun getAllRecordsOnce(): List<DailyRecord>
+
     @Query("SELECT * FROM daily_records ORDER BY date DESC LIMIT :limit")
     fun getRecentRecords(limit: Int): Flow<List<DailyRecord>>
 
@@ -33,8 +36,14 @@ interface DailyRecordDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun upsertRecord(record: DailyRecord)
 
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun upsertRecords(records: List<DailyRecord>)
+
     @Update
     suspend fun updateRecord(record: DailyRecord)
+
+    @Query("DELETE FROM daily_records")
+    suspend fun deleteAllRecords()
 
     @Query("UPDATE daily_records SET did = :newCount, checkNaamJap = :checkNaam, updatedAt = :timestamp WHERE date = :date")
     suspend fun updateJapCount(date: String, newCount: Long, checkNaam: Boolean, timestamp: Long = System.currentTimeMillis())
