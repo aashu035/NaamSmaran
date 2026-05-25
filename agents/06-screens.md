@@ -74,6 +74,6 @@ The Home screen must be a **pure immersive Darshan experience** — NO control p
 - All 7 section completion status (checkmarks)
 
 ### Emotional Tone
-- **Met/exceeded:** "शानदार! राधे राधे! 🎉" — celebration particles
-- **Missed:** Compassionate — "चिंता न करें, राधा जी की कृपा सदा रहे। कल और मेहनत करें 💪"
+- **Met/exceeded:** "गुरु कृपा केवलं" — celebration particles
+- **Missed:** Compassionate — "काहू के बल भजन काहू के बल आचार, व्यास भरोसे कुवरी के सोवत पाँव पसार - हमारे माई श्याम जू को राज"
 - Never punishing, never guilt-inducing

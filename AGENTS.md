@@ -25,6 +25,8 @@
 
 | File | Contents | Load When |
 |:---|:---|:---|
+| [00-current-status.md](agents/00-current-status.md) | Fast handoff: where we left off, latest files, plan, blockers | Resuming active work |
+| [00-full-context.md](agents/00-full-context.md) | Full onboarding context for new/outside agents | First time on this project |
 | [01-sampraday.md](agents/01-sampraday.md) | Religious context, visual world, forbidden symbols | Any UI/design work |
 | [02-formula.md](agents/02-formula.md) | Target formula, streak, day boundary, recomputation | Any logic/engine work |
 | [03-sections.md](agents/03-sections.md) | All 7 app sections with specs | Building any section screen |
@@ -74,6 +76,7 @@ Every agent must confirm:
 4. No hardcoded colors — all values from theme system
 5. There are **7** devotional sections, not 6
 6. No Om (ॐ), no trishul, no non-Radhavallabh symbols — see [01-sampraday.md](agents/01-sampraday.md)
+7. Read [00-current-status.md](agents/00-current-status.md) before resuming active work
 
 ---
 
