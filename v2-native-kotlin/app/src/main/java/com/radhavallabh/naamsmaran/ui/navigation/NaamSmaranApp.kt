@@ -15,6 +15,7 @@ import com.radhavallabh.naamsmaran.ui.screens.maharas.MaharasScreen
 import com.radhavallabh.naamsmaran.ui.screens.naamjap.NaamJapScreen
 import com.radhavallabh.naamsmaran.ui.screens.settings.SettingsScreen
 import com.radhavallabh.naamsmaran.ui.screens.vrindavanlila.VrindavanLilaScreen
+import com.radhavallabh.naamsmaran.ui.screens.dashboard.DashboardScreen
 
 /**
  * NaamSmaranApp — Root navigation composable.
@@ -54,6 +55,37 @@ fun NaamSmaranApp(
                 onNavigateToSection = { index ->
                     val screen = Screen.fromSectionIndex(index)
                     navController.navigate(screen.route) {
+                        launchSingleTop = true
+                    }
+                },
+                onNavigateToDashboard = {
+                    navController.navigate(Screen.Dashboard.route) {
+                        launchSingleTop = true
+                    }
+                }
+            )
+        }
+
+        // ── Dashboard ─────────────────────────────────────────────────────
+        composable(Screen.Dashboard.route) {
+            DashboardScreen(
+                onNavigateToSection = { sectionId ->
+                    // Dashboard uses 1-based IDs (1=NaamJap, 2=Chaturasi, etc.)
+                    // but Screen.fromSectionIndex expects 0-based (0=NaamJap, 1=Chaturasi)
+                    val screen = Screen.fromSectionIndex(sectionId - 1)
+                    navController.navigate(screen.route) {
+                        launchSingleTop = true
+                    }
+                },
+                onNavigateBack = { navController.popBackStack() },
+                onNavigateToHome = {
+                    navController.navigate(Screen.Home.route) {
+                        popUpTo(Screen.Home.route) { inclusive = true }
+                        launchSingleTop = true
+                    }
+                },
+                onNavigateToSettings = {
+                    navController.navigate(Screen.Settings.route) {
                         launchSingleTop = true
                     }
                 }

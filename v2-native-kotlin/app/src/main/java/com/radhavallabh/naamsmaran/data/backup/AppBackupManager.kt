@@ -68,7 +68,7 @@ class AppBackupManager @Inject constructor(
                 NaamSmaranDatabase::class.java,
                 "naam_smaran_db"
             )
-                .addMigrations(NaamSmaranDatabase.MIGRATION_1_2)
+                .addMigrations(NaamSmaranDatabase.MIGRATION_1_2, NaamSmaranDatabase.MIGRATION_2_3)
                 .fallbackToDestructiveMigration()
                 .build()
             val repository = JapRepository(database, database.dailyRecordDao(), store)

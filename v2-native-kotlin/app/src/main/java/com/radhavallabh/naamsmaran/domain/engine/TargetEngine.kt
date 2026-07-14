@@ -34,11 +34,16 @@ object TargetEngine {
         countToday: Long,
         increment: Int = 5000
     ): Long {
-        return if (countToday >= targetToday) {
+        require(countToday >= 0) { "Did count cannot be negative" }
+        
+        val nextTarget = if (countToday >= targetToday) {
             countToday + increment
         } else {
             targetToday + (targetToday - countToday)
         }
+        
+        require(nextTarget >= targetToday) { "Target overflow detected" }
+        return nextTarget
     }
 
     /**
@@ -71,6 +76,7 @@ object TargetEngine {
 
             result.add(record.copy(
                 target = target,
+                checkNaamJap = record.did >= target,
                 streakCount = streak,
                 updatedAt = System.currentTimeMillis()
             ))

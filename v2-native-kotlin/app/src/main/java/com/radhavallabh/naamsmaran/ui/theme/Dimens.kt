@@ -49,12 +49,14 @@ object Dimens {
     val SheetCornerRadius = Space7
     val SheetHandleWidth = Space8 + Space1
 
-    // U2 fix: 0.22 left quick-add buttons half-cut. 0.52 reveals ~48% of screen height
-    //          which comfortably fits the handle + section header + 3 quick-add buttons.
-    const val SheetHiddenOffsetFraction = 0.92f
-    const val SheetQuickActionsOffsetFraction = 0.52f
-    const val SheetFullGridOffsetFraction = 0.08f
-    const val SheetDragThresholdFraction = 0.08f
+    // Sheet offset fractions (fraction of screen height from top where sheet top edge sits).
+    // Hidden:      0.90 → sheet mostly off-screen, only the drag handle peeks (~10% from bottom)
+    // QuickActions: 0.45 → sheet covers ~55% of screen (shows header + summary + quick-add)
+    // FullGrid:    0.04 → sheet almost full-screen (4% gap at top for visual breathing room)
+    const val SheetHiddenOffsetFraction = 0.90f
+    const val SheetQuickActionsOffsetFraction = 0.45f
+    const val SheetFullGridOffsetFraction = 0.04f
+    const val SheetDragThresholdFraction = 0.12f
 
     // ═══════════════════════════════════════════════════════════
     // GLASS CARD — blur radius

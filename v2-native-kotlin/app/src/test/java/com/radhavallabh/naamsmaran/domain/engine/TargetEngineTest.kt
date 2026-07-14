@@ -80,6 +80,15 @@ class TargetEngineTest {
         assertEquals(215_000L, result)
     }
 
+    @Test
+    fun `user deficit case - 21600 target 20 done = 43180 next`() {
+        val result = TargetEngine.calculateNextTarget(
+            targetToday = 21_600L,
+            countToday = 20L
+        )
+        assertEquals(43_180L, result)
+    }
+
     // ═══════════════════════════════════════════════════════════
     // Edge Cases
     // ═══════════════════════════════════════════════════════════
@@ -135,6 +144,20 @@ class TargetEngineTest {
         assertEquals(26_000L, result)
     }
 
+    @Test
+    fun `negative count throws IllegalArgumentException`() {
+        org.junit.Assert.assertThrows(IllegalArgumentException::class.java) {
+            TargetEngine.calculateNextTarget(21_600L, -5L)
+        }
+    }
+
+    @Test
+    fun `overflow target throws IllegalArgumentException`() {
+        org.junit.Assert.assertThrows(IllegalArgumentException::class.java) {
+            TargetEngine.calculateNextTarget(Long.MAX_VALUE - 100L, 0L)
+        }
+    }
+
     // ═══════════════════════════════════════════════════════════
     // StreakEngine — Smoke test
     // ═══════════════════════════════════════════════════════════
@@ -149,5 +172,33 @@ class TargetEngineTest {
     fun `streak resets to zero when target missed`() {
         assertEquals(0, StreakEngine.calculateStreak(10, 21_600L, 21_599L))
         assertEquals(0, StreakEngine.calculateStreak(5, 50_000L, 0L))
+    }
+
+    @Test
+    fun `recomputeChain updates checkNaamJap correctly`() {
+        val records = listOf(
+            com.radhavallabh.naamsmaran.data.local.entity.DailyRecord(
+                date = "2026-05-01",
+                target = 21600L,
+                did = 20L,
+                checkNaamJap = true
+            ),
+            com.radhavallabh.naamsmaran.data.local.entity.DailyRecord(
+                date = "2026-05-02",
+                target = 21600L,
+                did = 50000L,
+                checkNaamJap = false
+            )
+        )
+
+        val updated = TargetEngine.recomputeChain(records, increment = 5000, initialTarget = 21600L)
+        
+        // Day 1: Target = 21600, Did = 20 (Target missed)
+        assertEquals(21600L, updated[0].target)
+        org.junit.Assert.assertFalse(updated[0].checkNaamJap)
+        
+        // Day 2: Target = 21600 + (21600 - 20) = 43180. Did = 50000 (Target met)
+        assertEquals(43180L, updated[1].target)
+        org.junit.Assert.assertTrue(updated[1].checkNaamJap)
     }
 }

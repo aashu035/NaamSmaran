@@ -181,7 +181,11 @@ fun NaamJapScreen(
             ) {
                 OutlinedTextField(
                     value = manualInput,
-                    onValueChange = { if (it.length <= 7) manualInput = it },
+                    onValueChange = { 
+                        if (it.length <= 7 && com.radhavallabh.naamsmaran.domain.util.InputValidator.isSafe(it)) {
+                            manualInput = it
+                        }
+                    },
                     placeholder = {
                         Text(
                             text = "जप संख्या लिखें",
@@ -233,6 +237,12 @@ fun NaamJapScreen(
 
         // ── Track A: हरिवंश Naam Jap (माला) ────────────────────────────────
         GlassCardColumn {
+            val malaDid = record?.mala_did ?: 0L
+            val malaTarget = record?.mala_target ?: 11L
+            val malaRemaining = (malaTarget - malaDid).coerceAtLeast(0)
+            val malaProgress = if (malaTarget > 0) malaDid.toFloat() / malaTarget.toFloat() else 0f
+            val malaComplete = malaDid >= malaTarget
+
             Text(
                 text = "📿 हरिवंश नाम जप — Track A",
                 style = NaamSmaranTypography.titleMedium,
@@ -240,25 +250,72 @@ fun NaamJapScreen(
                 fontWeight = FontWeight.SemiBold
             )
             Spacer(modifier = Modifier.height(Dimens.Space3))
-            StatRow(label = "आज का लक्ष्य",   value = "११ माला")
-            Spacer(modifier = Modifier.height(Dimens.Space2))
-            StatRow(label = "१ माला =",        value = "१०८ जप")
+
+            val progressPercent = (malaProgress * 100).toInt().coerceIn(0, 100)
+            Text(
+                text = "$malaDid माला",
+                fontSize = 44.sp,
+                fontWeight = FontWeight.Bold,
+                color = if (malaComplete) StateExceeded else TextPrimary,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.fillMaxWidth()
+            )
+            Text(
+                text = "का $progressPercent% पूर्ण",
+                style = NaamSmaranTypography.bodyMedium,
+                color = TextSecondary,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.fillMaxWidth()
+            )
+
             Spacer(modifier = Modifier.height(Dimens.Space3))
+
+            // Progress bar
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .clip(RoundedCornerShape(12.dp))
-                    .background(SurfaceGlassInput)
-                    .border(1.dp, BorderGlass, RoundedCornerShape(12.dp))
-                    .padding(Dimens.Space4),
-                contentAlignment = Alignment.Center
+                    .height(Dimens.BarHeight)
+                    .clip(RoundedCornerShape(3.dp))
+                    .background(com.radhavallabh.naamsmaran.ui.theme.ProgressTrack)
             ) {
-                Text(
-                    text = "🪷 3D माला काउंटर\nजल्द आएगा",
-                    style = NaamSmaranTypography.bodyMedium,
-                    color = TextTertiary,
-                    textAlign = TextAlign.Center
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth(malaProgress.coerceIn(0f, 1f))
+                        .height(Dimens.BarHeight)
+                        .clip(RoundedCornerShape(3.dp))
+                        .background(
+                            if (malaComplete) StateExceeded else colors.accentSecondary
+                        )
                 )
+            }
+
+            Spacer(modifier = Modifier.height(Dimens.Space4))
+
+            StatRow(label = "किया",  value = "$malaDid माला")
+            Spacer(modifier = Modifier.height(Dimens.Space2))
+            StatRow(label = "लक्ष्य", value = "$malaTarget माला")
+            Spacer(modifier = Modifier.height(Dimens.Space2))
+            StatRow(
+                label = "शेष",
+                value = if (malaComplete) "✅ पूर्ण!" else "$malaRemaining माला",
+                valueColor = if (malaComplete) StateExceeded else StatePartial
+            )
+
+            Spacer(modifier = Modifier.height(Dimens.Space4))
+
+            // Quick add for Mala
+            Text(
+                text = "माला जोड़ें",
+                style = NaamSmaranTypography.labelLarge,
+                color = TextTertiary
+            )
+            Spacer(modifier = Modifier.height(Dimens.Space2))
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(Dimens.Space3)
+            ) {
+                QuickAddButton(label = "+१ माला", modifier = Modifier.weight(1f)) { viewModel.addMala(1) }
+                QuickAddButton(label = "+११ माला", modifier = Modifier.weight(1f)) { viewModel.addMala(11) }
             }
         }
 

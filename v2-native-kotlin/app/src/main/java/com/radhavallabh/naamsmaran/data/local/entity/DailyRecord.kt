@@ -40,6 +40,11 @@ data class DailyRecord(
     val nextDayTarget: Long = 0L,          // Computed on day close
     val checkNaamJap: Boolean = false,     // auto-true when did > 0
 
+    // Track A — हरिवंश (mala counter, carry-over + 5 baseline formula)
+    val mala_target: Long = 11L,
+    val mala_did: Long = 0L,
+    val checkMala: Boolean = false,
+
     // ═══════════════════════════════════════════════════════════
     // Section 2: श्री हित चतुरसी जी (carry-over, +6 पद)
     // ═══════════════════════════════════════════════════════════

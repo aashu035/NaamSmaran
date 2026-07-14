@@ -1,121 +1,140 @@
 package com.radhavallabh.naamsmaran.data.local
 
 import android.content.Context
-import androidx.datastore.core.DataStore
-import androidx.datastore.preferences.core.Preferences
-import androidx.datastore.preferences.core.booleanPreferencesKey
-import androidx.datastore.preferences.core.edit
-import androidx.datastore.preferences.core.intPreferencesKey
-import androidx.datastore.preferences.core.longPreferencesKey
-import androidx.datastore.preferences.core.stringPreferencesKey
-import androidx.datastore.preferences.preferencesDataStore
+import android.content.SharedPreferences
+import androidx.security.crypto.EncryptedSharedPreferences
+import androidx.security.crypto.MasterKey
 import com.radhavallabh.naamsmaran.data.backup.AppSettingsSnapshot
 import com.radhavallabh.naamsmaran.ui.theme.NaamSmaranThemeId
-import kotlinx.coroutines.flow.first
+import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 import javax.inject.Singleton
 
 /**
- * AppSettingsStore — DataStore-based preferences.
+ * AppSettingsStore — EncryptedSharedPreferences-based preferences.
  * Schema from AGENTS.md §6 — AppSettings.
+ * Adheres to ECC Standards by encrypting sensitive settings.
  */
-
-// Extension property for DataStore
-val Context.settingsDataStore: DataStore<Preferences> by preferencesDataStore(name = "naam_smaran_settings")
 
 @Singleton
 class AppSettingsStore @Inject constructor(
-    private val dataStore: DataStore<Preferences>
+    @ApplicationContext context: Context
 ) {
+    private val masterKey = MasterKey.Builder(context)
+        .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
+        .build()
+
+    private val prefs: SharedPreferences = EncryptedSharedPreferences.create(
+        context,
+        "naam_smaran_settings_encrypted",
+        masterKey,
+        EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
+        EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
+    )
+
     // ═══════════════════════════════════════════════════════════
     // Keys
     // ═══════════════════════════════════════════════════════════
     private object Keys {
-        val ACTIVE_THEME = stringPreferencesKey("active_theme")
-        val CHOSEN_MANTRA = stringPreferencesKey("chosen_mantra_text")
-        val GREETING_NAME = stringPreferencesKey("deity_display_name")
-        val INITIAL_TARGET = longPreferencesKey("initial_target")
-        val TARGET_INCREMENT = intPreferencesKey("target_increment")
-        val DAY_BOUNDARY_HOUR = intPreferencesKey("day_boundary_hour")
-        val USE_INDIAN_NUMBERING = booleanPreferencesKey("use_indian_numbering")
-        val DAILY_REMINDER_ENABLED = booleanPreferencesKey("daily_reminder_enabled")
-        val DAILY_REMINDER_HOUR = intPreferencesKey("daily_reminder_hour")
-        val DAILY_REMINDER_MINUTE = intPreferencesKey("daily_reminder_minute")
-        val HAPTIC_ENABLED = booleanPreferencesKey("haptic_enabled")
-        val AUTO_BACKUP_ENABLED = booleanPreferencesKey("auto_backup_enabled")
-        val LAST_BACKUP_AT = longPreferencesKey("last_backup_at")
-        val AUDIO_FILENAME = stringPreferencesKey("audio_filename")
-        val AUDIO_VOLUME = intPreferencesKey("audio_volume_percent")
-        val AUDIO_LOOP = booleanPreferencesKey("audio_loop")
-        val BACKGROUND_MODE = stringPreferencesKey("background_mode") // "frames" | "images"
-        val GALLERY_IMAGE_URIS = stringPreferencesKey("gallery_image_uris") // pipe-delimited URIs
+        const val ACTIVE_THEME = "active_theme"
+        const val CHOSEN_MANTRA = "chosen_mantra_text"
+        const val GREETING_NAME = "deity_display_name"
+        const val INITIAL_TARGET = "initial_target"
+        const val TARGET_INCREMENT = "target_increment"
+        const val DAY_BOUNDARY_HOUR = "day_boundary_hour"
+        const val USE_INDIAN_NUMBERING = "use_indian_numbering"
+        const val DAILY_REMINDER_ENABLED = "daily_reminder_enabled"
+        const val DAILY_REMINDER_HOUR = "daily_reminder_hour"
+        const val DAILY_REMINDER_MINUTE = "daily_reminder_minute"
+        const val HAPTIC_ENABLED = "haptic_enabled"
+        const val AUTO_BACKUP_ENABLED = "auto_backup_enabled"
+        const val LAST_BACKUP_AT = "last_backup_at"
+        const val BACKGROUND_MODE = "background_mode"
+        const val GALLERY_IMAGE_URIS = "gallery_image_uris"
+    }
+
+    private fun <T> getFlow(key: String, defaultValue: T, getter: () -> T): Flow<T> = callbackFlow {
+        // Emit initial value
+        trySend(getter())
+
+        val listener = SharedPreferences.OnSharedPreferenceChangeListener { _, changedKey ->
+            if (changedKey == key) {
+                trySend(getter())
+            }
+        }
+        prefs.registerOnSharedPreferenceChangeListener(listener)
+        awaitClose {
+            prefs.unregisterOnSharedPreferenceChangeListener(listener)
+        }
     }
 
     // ═══════════════════════════════════════════════════════════
     // Readers (Flow-based for reactive UI)
     // ═══════════════════════════════════════════════════════════
-    val activeTheme: Flow<NaamSmaranThemeId> = dataStore.data.map { prefs ->
-        val name = prefs[Keys.ACTIVE_THEME] ?: NaamSmaranThemeId.SHARAD_MOON.name
+    val activeTheme: Flow<NaamSmaranThemeId> = getFlow(Keys.ACTIVE_THEME, NaamSmaranThemeId.SHARAD_MOON) {
+        val name = prefs.getString(Keys.ACTIVE_THEME, NaamSmaranThemeId.SHARAD_MOON.name) ?: NaamSmaranThemeId.SHARAD_MOON.name
         try { NaamSmaranThemeId.valueOf(name) } catch (_: Exception) { NaamSmaranThemeId.SHARAD_MOON }
     }
 
-    val chosenMantra: Flow<String> = dataStore.data.map { prefs ->
-        prefs[Keys.CHOSEN_MANTRA] ?: "राधा"
+    val chosenMantra: Flow<String> = getFlow(Keys.CHOSEN_MANTRA, "राधा") {
+        prefs.getString(Keys.CHOSEN_MANTRA, "राधा") ?: "राधा"
     }
 
-    val greetingName: Flow<String> = dataStore.data.map { prefs ->
-        prefs[Keys.GREETING_NAME] ?: "जय जय श्री हित हरिवंश"
+    val greetingName: Flow<String> = getFlow(Keys.GREETING_NAME, "जय जय श्री हित हरिवंश") {
+        prefs.getString(Keys.GREETING_NAME, "जय जय श्री हित हरिवंश") ?: "जय जय श्री हित हरिवंश"
     }
 
-    val initialTarget: Flow<Long> = dataStore.data.map { prefs ->
-        prefs[Keys.INITIAL_TARGET] ?: 21600L
+    val initialTarget: Flow<Long> = getFlow(Keys.INITIAL_TARGET, 21600L) {
+        prefs.getLong(Keys.INITIAL_TARGET, 21600L)
     }
 
-    val targetIncrement: Flow<Int> = dataStore.data.map { prefs ->
-        prefs[Keys.TARGET_INCREMENT] ?: 5000
+    val targetIncrement: Flow<Int> = getFlow(Keys.TARGET_INCREMENT, 5000) {
+        val raw = prefs.getInt(Keys.TARGET_INCREMENT, 5000)
+        if (raw == 1000) 5000 else raw
     }
 
-    val dayBoundaryHour: Flow<Int> = dataStore.data.map { prefs ->
-        prefs[Keys.DAY_BOUNDARY_HOUR] ?: 3
+    val dayBoundaryHour: Flow<Int> = getFlow(Keys.DAY_BOUNDARY_HOUR, 3) {
+        prefs.getInt(Keys.DAY_BOUNDARY_HOUR, 3)
     }
 
-    val useIndianNumbering: Flow<Boolean> = dataStore.data.map { prefs ->
-        prefs[Keys.USE_INDIAN_NUMBERING] ?: true
+    val useIndianNumbering: Flow<Boolean> = getFlow(Keys.USE_INDIAN_NUMBERING, true) {
+        prefs.getBoolean(Keys.USE_INDIAN_NUMBERING, true)
     }
 
-    val dailyReminderEnabled: Flow<Boolean> = dataStore.data.map { prefs ->
-        prefs[Keys.DAILY_REMINDER_ENABLED] ?: true
+    val dailyReminderEnabled: Flow<Boolean> = getFlow(Keys.DAILY_REMINDER_ENABLED, true) {
+        prefs.getBoolean(Keys.DAILY_REMINDER_ENABLED, true)
     }
 
-    val dailyReminderHour: Flow<Int> = dataStore.data.map { prefs ->
-        prefs[Keys.DAILY_REMINDER_HOUR] ?: 6
+    val dailyReminderHour: Flow<Int> = getFlow(Keys.DAILY_REMINDER_HOUR, 6) {
+        prefs.getInt(Keys.DAILY_REMINDER_HOUR, 6)
     }
 
-    val dailyReminderMinute: Flow<Int> = dataStore.data.map { prefs ->
-        prefs[Keys.DAILY_REMINDER_MINUTE] ?: 0
+    val dailyReminderMinute: Flow<Int> = getFlow(Keys.DAILY_REMINDER_MINUTE, 0) {
+        prefs.getInt(Keys.DAILY_REMINDER_MINUTE, 0)
     }
 
-    val hapticEnabled: Flow<Boolean> = dataStore.data.map { prefs ->
-        prefs[Keys.HAPTIC_ENABLED] ?: true
+    val hapticEnabled: Flow<Boolean> = getFlow(Keys.HAPTIC_ENABLED, true) {
+        prefs.getBoolean(Keys.HAPTIC_ENABLED, true)
     }
 
-    val autoBackupEnabled: Flow<Boolean> = dataStore.data.map { prefs ->
-        prefs[Keys.AUTO_BACKUP_ENABLED] ?: false
+    val autoBackupEnabled: Flow<Boolean> = getFlow(Keys.AUTO_BACKUP_ENABLED, false) {
+        prefs.getBoolean(Keys.AUTO_BACKUP_ENABLED, false)
     }
 
-    val lastBackupAt: Flow<Long?> = dataStore.data.map { prefs ->
-        prefs[Keys.LAST_BACKUP_AT]
+    val lastBackupAt: Flow<Long?> = getFlow(Keys.LAST_BACKUP_AT, null as Long?) {
+        if (prefs.contains(Keys.LAST_BACKUP_AT)) prefs.getLong(Keys.LAST_BACKUP_AT, 0L) else null
     }
 
-    val backgroundMode: Flow<String> = dataStore.data.map { prefs ->
-        prefs[Keys.BACKGROUND_MODE] ?: "images"
+    val backgroundMode: Flow<String> = getFlow(Keys.BACKGROUND_MODE, "images") {
+        prefs.getString(Keys.BACKGROUND_MODE, "images") ?: "images"
     }
 
-    /** User gallery image URIs for the showreel background. */
-    val galleryImageUris: Flow<List<String>> = dataStore.data.map { prefs ->
-        val raw = prefs[Keys.GALLERY_IMAGE_URIS] ?: ""
+    val galleryImageUris: Flow<List<String>> = getFlow(Keys.GALLERY_IMAGE_URIS, emptyList()) {
+        val raw = prefs.getString(Keys.GALLERY_IMAGE_URIS, "") ?: ""
         if (raw.isBlank()) emptyList() else raw.split("|")
     }
 
@@ -123,114 +142,104 @@ class AppSettingsStore @Inject constructor(
     // Writers
     // ═══════════════════════════════════════════════════════════
     suspend fun setTheme(themeId: NaamSmaranThemeId) {
-        dataStore.edit { it[Keys.ACTIVE_THEME] = themeId.name }
+        prefs.edit().putString(Keys.ACTIVE_THEME, themeId.name).apply()
     }
 
     suspend fun setDayBoundaryHour(hour: Int) {
-        dataStore.edit { it[Keys.DAY_BOUNDARY_HOUR] = hour.coerceIn(1, 5) }
+        prefs.edit().putInt(Keys.DAY_BOUNDARY_HOUR, hour.coerceIn(1, 5)).apply()
     }
 
     suspend fun setTargetIncrement(increment: Int) {
-        dataStore.edit { it[Keys.TARGET_INCREMENT] = increment }
+        prefs.edit().putInt(Keys.TARGET_INCREMENT, increment).apply()
     }
 
     suspend fun setDailyReminderEnabled(enabled: Boolean) {
-        dataStore.edit { it[Keys.DAILY_REMINDER_ENABLED] = enabled }
+        prefs.edit().putBoolean(Keys.DAILY_REMINDER_ENABLED, enabled).apply()
     }
 
     suspend fun setDailyReminderTime(hour: Int, minute: Int) {
-        dataStore.edit {
-            it[Keys.DAILY_REMINDER_HOUR] = hour.coerceIn(0, 23)
-            it[Keys.DAILY_REMINDER_MINUTE] = minute.coerceIn(0, 59)
-        }
+        prefs.edit()
+            .putInt(Keys.DAILY_REMINDER_HOUR, hour.coerceIn(0, 23))
+            .putInt(Keys.DAILY_REMINDER_MINUTE, minute.coerceIn(0, 59))
+            .apply()
     }
 
     suspend fun setHapticEnabled(enabled: Boolean) {
-        dataStore.edit { it[Keys.HAPTIC_ENABLED] = enabled }
+        prefs.edit().putBoolean(Keys.HAPTIC_ENABLED, enabled).apply()
     }
 
     suspend fun setAutoBackupEnabled(enabled: Boolean) {
-        dataStore.edit { it[Keys.AUTO_BACKUP_ENABLED] = enabled }
+        prefs.edit().putBoolean(Keys.AUTO_BACKUP_ENABLED, enabled).apply()
     }
 
     suspend fun setLastBackupAt(timestamp: Long?) {
-        dataStore.edit {
-            if (timestamp == null) {
-                it.remove(Keys.LAST_BACKUP_AT)
-            } else {
-                it[Keys.LAST_BACKUP_AT] = timestamp
-            }
+        if (timestamp == null) {
+            prefs.edit().remove(Keys.LAST_BACKUP_AT).apply()
+        } else {
+            prefs.edit().putLong(Keys.LAST_BACKUP_AT, timestamp).apply()
         }
     }
 
     suspend fun setBackgroundMode(mode: String) {
-        dataStore.edit { it[Keys.BACKGROUND_MODE] = mode }
+        prefs.edit().putString(Keys.BACKGROUND_MODE, mode).apply()
     }
 
     suspend fun setGalleryImageUris(uris: List<String>) {
-        dataStore.edit { prefs ->
-            prefs[Keys.GALLERY_IMAGE_URIS] = uris.distinct().joinToString("|")
-        }
+        prefs.edit().putString(Keys.GALLERY_IMAGE_URIS, uris.distinct().joinToString("|")).apply()
     }
 
-    /** Add a gallery image URI to the showreel. */
     suspend fun addGalleryImageUri(uri: String) {
-        dataStore.edit { prefs ->
-            val existing = prefs[Keys.GALLERY_IMAGE_URIS] ?: ""
-            val uris = if (existing.isBlank()) mutableListOf() else existing.split("|").toMutableList()
-            if (!uris.contains(uri)) {
-                uris.add(uri)
-                prefs[Keys.GALLERY_IMAGE_URIS] = uris.joinToString("|")
-            }
+        val existing = prefs.getString(Keys.GALLERY_IMAGE_URIS, "") ?: ""
+        val uris = if (existing.isBlank()) mutableListOf() else existing.split("|").toMutableList()
+        if (!uris.contains(uri)) {
+            uris.add(uri)
+            prefs.edit().putString(Keys.GALLERY_IMAGE_URIS, uris.joinToString("|")).apply()
         }
     }
 
-    /** Remove a gallery image URI from the showreel. */
     suspend fun removeGalleryImageUri(uri: String) {
-        dataStore.edit { prefs ->
-            val existing = prefs[Keys.GALLERY_IMAGE_URIS] ?: ""
-            val uris = existing.split("|").toMutableList()
-            uris.remove(uri)
-            prefs[Keys.GALLERY_IMAGE_URIS] = uris.joinToString("|")
-        }
+        val existing = prefs.getString(Keys.GALLERY_IMAGE_URIS, "") ?: ""
+        val uris = existing.split("|").toMutableList()
+        uris.remove(uri)
+        prefs.edit().putString(Keys.GALLERY_IMAGE_URIS, uris.joinToString("|")).apply()
     }
 
     suspend fun snapshot(): AppSettingsSnapshot {
-        val prefs = dataStore.data.first()
         return AppSettingsSnapshot(
-            activeTheme = prefs[Keys.ACTIVE_THEME] ?: NaamSmaranThemeId.SHARAD_MOON.name,
-            initialTarget = prefs[Keys.INITIAL_TARGET] ?: 21_600L,
-            targetIncrement = prefs[Keys.TARGET_INCREMENT] ?: 5_000,
-            dayBoundaryHour = prefs[Keys.DAY_BOUNDARY_HOUR] ?: 3,
-            dailyReminderEnabled = prefs[Keys.DAILY_REMINDER_ENABLED] ?: true,
-            dailyReminderHour = prefs[Keys.DAILY_REMINDER_HOUR] ?: 6,
-            dailyReminderMinute = prefs[Keys.DAILY_REMINDER_MINUTE] ?: 0,
-            hapticEnabled = prefs[Keys.HAPTIC_ENABLED] ?: true,
-            autoBackupEnabled = prefs[Keys.AUTO_BACKUP_ENABLED] ?: false,
-            lastBackupAt = prefs[Keys.LAST_BACKUP_AT],
-            galleryImageUris = (prefs[Keys.GALLERY_IMAGE_URIS] ?: "")
+            activeTheme = prefs.getString(Keys.ACTIVE_THEME, NaamSmaranThemeId.SHARAD_MOON.name) ?: NaamSmaranThemeId.SHARAD_MOON.name,
+            initialTarget = prefs.getLong(Keys.INITIAL_TARGET, 21_600L),
+            targetIncrement = prefs.getInt(Keys.TARGET_INCREMENT, 5_000),
+            dayBoundaryHour = prefs.getInt(Keys.DAY_BOUNDARY_HOUR, 3),
+            dailyReminderEnabled = prefs.getBoolean(Keys.DAILY_REMINDER_ENABLED, true),
+            dailyReminderHour = prefs.getInt(Keys.DAILY_REMINDER_HOUR, 6),
+            dailyReminderMinute = prefs.getInt(Keys.DAILY_REMINDER_MINUTE, 0),
+            hapticEnabled = prefs.getBoolean(Keys.HAPTIC_ENABLED, true),
+            autoBackupEnabled = prefs.getBoolean(Keys.AUTO_BACKUP_ENABLED, false),
+            lastBackupAt = if (prefs.contains(Keys.LAST_BACKUP_AT)) prefs.getLong(Keys.LAST_BACKUP_AT, 0L) else null,
+            galleryImageUris = (prefs.getString(Keys.GALLERY_IMAGE_URIS, "") ?: "")
                 .split("|")
                 .filter { it.isNotBlank() }
         )
     }
 
     suspend fun restoreFromSnapshot(snapshot: AppSettingsSnapshot) {
-        dataStore.edit { prefs ->
-            prefs[Keys.ACTIVE_THEME] = snapshot.activeTheme
-            prefs[Keys.INITIAL_TARGET] = snapshot.initialTarget
-            prefs[Keys.TARGET_INCREMENT] = snapshot.targetIncrement
-            prefs[Keys.DAY_BOUNDARY_HOUR] = snapshot.dayBoundaryHour.coerceIn(1, 5)
-            prefs[Keys.DAILY_REMINDER_ENABLED] = snapshot.dailyReminderEnabled
-            prefs[Keys.DAILY_REMINDER_HOUR] = snapshot.dailyReminderHour.coerceIn(0, 23)
-            prefs[Keys.DAILY_REMINDER_MINUTE] = snapshot.dailyReminderMinute.coerceIn(0, 59)
-            prefs[Keys.HAPTIC_ENABLED] = snapshot.hapticEnabled
-            prefs[Keys.AUTO_BACKUP_ENABLED] = snapshot.autoBackupEnabled
-            if (snapshot.lastBackupAt == null) {
-                prefs.remove(Keys.LAST_BACKUP_AT)
-            } else {
-                prefs[Keys.LAST_BACKUP_AT] = snapshot.lastBackupAt
+        prefs.edit()
+            .putString(Keys.ACTIVE_THEME, snapshot.activeTheme)
+            .putLong(Keys.INITIAL_TARGET, snapshot.initialTarget)
+            .putInt(Keys.TARGET_INCREMENT, snapshot.targetIncrement)
+            .putInt(Keys.DAY_BOUNDARY_HOUR, snapshot.dayBoundaryHour.coerceIn(1, 5))
+            .putBoolean(Keys.DAILY_REMINDER_ENABLED, snapshot.dailyReminderEnabled)
+            .putInt(Keys.DAILY_REMINDER_HOUR, snapshot.dailyReminderHour.coerceIn(0, 23))
+            .putInt(Keys.DAILY_REMINDER_MINUTE, snapshot.dailyReminderMinute.coerceIn(0, 59))
+            .putBoolean(Keys.HAPTIC_ENABLED, snapshot.hapticEnabled)
+            .putBoolean(Keys.AUTO_BACKUP_ENABLED, snapshot.autoBackupEnabled)
+            .apply {
+                if (snapshot.lastBackupAt == null) {
+                    remove(Keys.LAST_BACKUP_AT)
+                } else {
+                    putLong(Keys.LAST_BACKUP_AT, snapshot.lastBackupAt)
+                }
             }
-            prefs[Keys.GALLERY_IMAGE_URIS] = snapshot.galleryImageUris.distinct().joinToString("|")
-        }
+        prefs.edit().putString(Keys.GALLERY_IMAGE_URIS, snapshot.galleryImageUris.distinct().joinToString("|")).apply()
     }
 }

@@ -22,7 +22,7 @@ import com.radhavallabh.naamsmaran.data.local.entity.DailyRecord
  */
 @Database(
     entities = [DailyRecord::class],
-    version = 2,
+    version = 3,
     exportSchema = false
 )
 abstract class NaamSmaranDatabase : RoomDatabase() {
@@ -31,12 +31,6 @@ abstract class NaamSmaranDatabase : RoomDatabase() {
     companion object {
         /**
          * Migration 1→2: 7-section schema alignment.
-         *
-         * Strategy: ADD new columns (non-destructive), then skip old columns
-         * (Room will ignore columns not in the entity; old columns stay but are dead).
-         *
-         * This is a personal APK — no production users to migrate.
-         * Fallback: destructive migration is also registered in AppModule.
          */
         val MIGRATION_1_2 = object : Migration(1, 2) {
             override fun migrate(db: SupportSQLiteDatabase) {
@@ -64,6 +58,17 @@ abstract class NaamSmaranDatabase : RoomDatabase() {
                 db.execSQL("ALTER TABLE daily_records ADD COLUMN vrindavan_target INTEGER NOT NULL DEFAULT 10")
                 db.execSQL("ALTER TABLE daily_records ADD COLUMN vrindavan_did INTEGER NOT NULL DEFAULT 0")
                 db.execSQL("ALTER TABLE daily_records ADD COLUMN checkVrindavan INTEGER NOT NULL DEFAULT 0")
+            }
+        }
+
+        /**
+         * Migration 2→3: Add Track A Mala target, did, and check columns.
+         */
+        val MIGRATION_2_3 = object : Migration(2, 3) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("ALTER TABLE daily_records ADD COLUMN mala_target INTEGER NOT NULL DEFAULT 11")
+                db.execSQL("ALTER TABLE daily_records ADD COLUMN mala_did INTEGER NOT NULL DEFAULT 0")
+                db.execSQL("ALTER TABLE daily_records ADD COLUMN checkMala INTEGER NOT NULL DEFAULT 0")
             }
         }
     }

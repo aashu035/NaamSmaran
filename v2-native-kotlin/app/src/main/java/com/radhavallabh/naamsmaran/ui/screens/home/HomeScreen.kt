@@ -11,6 +11,7 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.gestures.detectVerticalDragGestures
@@ -42,6 +43,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.BiasAlignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
@@ -52,6 +54,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.TransformOrigin
 import com.radhavallabh.naamsmaran.ui.theme.DashboardAlpha
 import com.radhavallabh.naamsmaran.ui.theme.OverlayScrimMedium
 import com.radhavallabh.naamsmaran.ui.theme.OverlayWhiteHigh
@@ -104,6 +107,7 @@ import java.util.Locale
 @Composable
 fun HomeScreen(
     onNavigateToSection: (Int) -> Unit = {},
+    onNavigateToDashboard: () -> Unit = {},
     viewModel: HomeViewModel = hiltViewModel()
 ) {
     val record by viewModel.todayRecord.collectAsState()
@@ -112,6 +116,7 @@ fun HomeScreen(
     val galleryState by viewModel.galleryState.collectAsState()
     val hapticEnabled by viewModel.hapticEnabled.collectAsState()
     val greetingName by viewModel.greetingName.collectAsState()
+    val chantingActive by viewModel.chantingActive.collectAsState()
     val colors = LocalNaamSmaranColors.current
 
     val context = LocalContext.current
@@ -120,6 +125,7 @@ fun HomeScreen(
     var sheetStage by remember { mutableStateOf(SheetStage.Hidden) }
     var swipeDeltaY by remember { mutableFloatStateOf(0f) }
     val sheetVisible = sheetStage != SheetStage.Hidden
+    val isChanting = chantingActive && sheetStage == SheetStage.Hidden
 
     // Gallery picker launcher — persists read URI permission
     val galleryLauncher = rememberLauncherForActivityResult(
@@ -148,6 +154,7 @@ fun HomeScreen(
     // Restarting mid-swipe orphaned the touch pipeline and froze all gestures.
     val sheetVisibleRef = rememberUpdatedState(sheetVisible)
     val hapticEnabledRef = rememberUpdatedState(hapticEnabled)
+    val sheetStageRef = rememberUpdatedState(sheetStage)
 
         // ── Tap + Swipe-Up gesture layer ──────────────────────────────────
         Box(
@@ -162,7 +169,7 @@ fun HomeScreen(
                                 if (hapticEnabledRef.value) {
                                     hapticEngine.playBeadClick()
                                 }
-                                viewModel.addJap(1)
+                                viewModel.addJap(1, isMainScreenTap = true)
                             }
                         }
                     )
@@ -174,9 +181,9 @@ fun HomeScreen(
                         onDragStart = { swipeDeltaY = 0f },
                         onDragEnd = {
                             // Threshold: 120dp upward swipe
-                            if (!sheetVisibleRef.value && swipeDeltaY < -Dimens.SheetSwipeThreshold.toPx()) {
+                            if (sheetStageRef.value != SheetStage.FullGrid && swipeDeltaY < -Dimens.SheetSwipeThreshold.toPx()) {
                                 viewModel.dismissHint()
-                                sheetStage = SheetStageMachine.expand(sheetStage)
+                                sheetStage = SheetStageMachine.expand(sheetStageRef.value)
                             }
                             swipeDeltaY = 0f
                         },
@@ -212,12 +219,34 @@ fun HomeScreen(
                 StreakBadge(streak = streak, format = format)
             }
 
-            // ── Layer 3: Floating Counter (center) ────────────────────────
+            // ── Layer 3: Floating Counter (center/bottom-left) ────────────
+            val horizontalBias by animateFloatAsState(
+                targetValue = if (isChanting) -0.85f else 0f,
+                animationSpec = spring(
+                    dampingRatio = Spring.DampingRatioMediumBouncy,
+                    stiffness = Spring.StiffnessLow
+                ),
+                label = "counter_x_bias"
+            )
+            val verticalBias by animateFloatAsState(
+                targetValue = if (isChanting) 0.75f else 0f,
+                animationSpec = spring(
+                    dampingRatio = Spring.DampingRatioMediumBouncy,
+                    stiffness = Spring.StiffnessLow
+                ),
+                label = "counter_y_bias"
+            )
+            val dynamicAlignment = remember(horizontalBias, verticalBias) {
+                BiasAlignment(horizontalBias, verticalBias)
+            }
+
             AnimatedVisibility(
                 visible = sheetStage == SheetStage.Hidden,
                 enter = fadeIn(animationSpec = spring(stiffness = Spring.StiffnessMediumLow)),
                 exit = fadeOut(animationSpec = spring(stiffness = Spring.StiffnessMediumLow)),
-                modifier = Modifier.align(Alignment.Center)
+                modifier = Modifier
+                    .align(dynamicAlignment)
+                    .padding(horizontal = Dimens.Space6, vertical = Dimens.Space6)
             ) {
                 HomeRestingOverlay(
                     did = did,
@@ -225,7 +254,8 @@ fun HomeScreen(
                     progress = progress,
                     format = format,
                     greetingName = greetingName,
-                    isActive = counterVisible
+                    isActive = counterVisible,
+                    isChanting = isChanting
                 )
             }
 
@@ -250,10 +280,12 @@ fun HomeScreen(
         }
 
         // ── Layer 6: Glass Bottom Sheet ───────────────────────────────────
+        // Note: navigationBarsPadding is applied INSIDE GlassBottomSheet's Column,
+        // not here — applying it on the parent Box shrinks the measurable height and
+        // causes the px offset calculations (screenHeightPx * fraction) to mismatch,
+        // making the sheet appear clipped when fully expanded.
         Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .navigationBarsPadding(),
+            modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.TopCenter
         ) {
             GlassBottomSheet(
@@ -285,6 +317,11 @@ fun HomeScreen(
                             viewModel.onBottomSheetDismissed()
                         }
                         galleryLauncher.launch(arrayOf("image/*"))
+                    },
+                    onNavigateToDashboard = {
+                        sheetStage = SheetStage.Hidden
+                        viewModel.onBottomSheetDismissed()
+                        onNavigateToDashboard()
                     }
                 )
             }
@@ -302,7 +339,8 @@ private fun FloatingCounter(
     did: Long,
     target: Long,
     progress: Float,
-    format: NumberFormat
+    format: NumberFormat,
+    extraTextAlpha: Float
 ) {
     val percent = (progress * 100).toInt().coerceIn(0, 100)
 
@@ -315,13 +353,15 @@ private fun FloatingCounter(
             letterSpacing = (-1).sp,
             textAlign = TextAlign.Center
         )
-        Spacer(modifier = Modifier.height(Dimens.Space1))
-        Text(
-            text = "${format.format(target)} का $percent%",
-            style = NaamSmaranTypography.bodyLarge,
-            color = TextSecondary,
-            textAlign = TextAlign.Center
-        )
+        if (extraTextAlpha > 0.01f) {
+            Spacer(modifier = Modifier.height(Dimens.Space1))
+            Text(
+                text = "${format.format(target)} का $percent%",
+                style = NaamSmaranTypography.bodyLarge,
+                color = TextSecondary.copy(alpha = extraTextAlpha),
+                textAlign = TextAlign.Center
+            )
+        }
     }
 }
 
@@ -332,23 +372,51 @@ private fun HomeRestingOverlay(
     progress: Float,
     format: NumberFormat,
     greetingName: String,
-    isActive: Boolean
+    isActive: Boolean,
+    isChanting: Boolean
 ) {
-    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+    val scale by animateFloatAsState(
+        targetValue = if (isChanting) 0.65f else 1f,
+        animationSpec = spring(
+            dampingRatio = Spring.DampingRatioMediumBouncy,
+            stiffness = Spring.StiffnessLow
+        ),
+        label = "counter_scale"
+    )
+    val extraTextAlpha by animateFloatAsState(
+        targetValue = if (isChanting) 0f else 1f,
+        animationSpec = spring(stiffness = Spring.StiffnessLow),
+        label = "counter_extra_text_alpha"
+    )
+
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier.graphicsLayer {
+            scaleX = scale
+            scaleY = scale
+            transformOrigin = TransformOrigin(
+                pivotFractionX = if (isChanting) 0f else 0.5f,
+                pivotFractionY = if (isChanting) 1f else 0.5f
+            )
+        }
+    ) {
         FloatingCounter(
             did = did,
             target = target,
             progress = progress,
-            format = format
+            format = format,
+            extraTextAlpha = extraTextAlpha
         )
-        Spacer(modifier = Modifier.height(Dimens.Space3))
-        Text(
-            text = greetingName,
-            style = NaamSmaranTypography.bodyMedium,
-            color = if (isActive) TextSecondary else TextPrimary,
-            textAlign = TextAlign.Center,
-            fontWeight = FontWeight.Medium
-        )
+        if (extraTextAlpha > 0.01f) {
+            Spacer(modifier = Modifier.height(Dimens.Space3))
+            Text(
+                text = greetingName,
+                style = NaamSmaranTypography.bodyMedium,
+                color = (if (isActive) TextSecondary else TextPrimary).copy(alpha = extraTextAlpha),
+                textAlign = TextAlign.Center,
+                fontWeight = FontWeight.Medium
+            )
+        }
     }
 }
 
@@ -411,7 +479,8 @@ private fun BottomSheetContent(
     format: NumberFormat,
     onQuickAdd: (Long) -> Unit,
     onNavigateToSection: (Int) -> Unit,
-    onAddGalleryImage: () -> Unit
+    onAddGalleryImage: () -> Unit,
+    onNavigateToDashboard: () -> Unit
 ) {
     val did = record?.did ?: 0L
     val target = record?.target ?: 21_600L
@@ -425,7 +494,8 @@ private fun BottomSheetContent(
         DashboardHeader(
             completedSections = completedSections,
             streak = streak,
-            format = format
+            format = format,
+            onNavigateToDashboard = onNavigateToDashboard
         )
 
         Spacer(modifier = Modifier.height(Dimens.Space5))
@@ -521,10 +591,13 @@ private fun BottomSheetContent(
 private fun DashboardHeader(
     completedSections: Int,
     streak: Long,
-    format: NumberFormat
+    format: NumberFormat,
+    onNavigateToDashboard: () -> Unit
 ) {
     Row(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onNavigateToDashboard() },
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -534,15 +607,26 @@ private fun DashboardHeader(
                 style = NaamSmaranTypography.labelSmall,
                 color = OverlayWhiteMedium
             )
-            Text(
-                text = "साधना डैशबोर्ड",
-                style = NaamSmaranTypography.titleMedium,
-                color = OverlayWhiteHigh,
-                fontWeight = FontWeight.SemiBold
-            )
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(
+                    text = "साधना डैशबोर्ड",
+                    style = NaamSmaranTypography.titleMedium,
+                    color = OverlayWhiteHigh,
+                    fontWeight = FontWeight.SemiBold
+                )
+                Spacer(modifier = Modifier.width(Dimens.Space2))
+                Text(
+                    text = "➔",
+                    fontSize = 14.sp,
+                    color = OverlayWhiteMedium
+                )
+            }
         }
 
-        Row(horizontalArrangement = Arrangement.spacedBy(Dimens.Space2)) {
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(Dimens.Space2),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
             DashboardPill(label = "${completedSections}/७ पूर्ण")
             if (streak > 0) {
                 DashboardPill(label = "${format.format(streak)} दिन")
@@ -860,6 +944,7 @@ private fun SectionProgressOverview(
                 label = item.label,
                 progressLabel = item.progressLabel,
                 isComplete = item.isComplete,
+                isPartial = item.isPartial,
                 progress = item.progress,
                 accent = item.accent
             )
@@ -873,17 +958,19 @@ private fun SectionProgressRow(
     label: String,
     progressLabel: String,
     isComplete: Boolean,
+    isPartial: Boolean,
     progress: Float?,
     accent: DashboardAccent
 ) {
     val colors = LocalNaamSmaranColors.current
-    val accentColor = accent.color(colors)
+    val accentColor = if (isPartial) colors.accentGold else accent.color(colors)
+    val hasStatus = isComplete || isPartial
 
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .background(
-                color = if (isComplete) {
+                color = if (hasStatus) {
                     accentColor.copy(alpha = DashboardAlpha.SectionCompleteBackground)
                 } else {
                     SurfaceGlassInput
@@ -892,7 +979,7 @@ private fun SectionProgressRow(
             )
             .border(
                 width = Dimens.Space1 / 4,
-                color = if (isComplete) {
+                color = if (hasStatus) {
                     accentColor.copy(alpha = DashboardAlpha.SectionCompleteBorder)
                 } else {
                     BorderGlass
@@ -1078,6 +1165,7 @@ private data class DashboardSectionRow(
     val label: String,
     val progressLabel: String,
     val isComplete: Boolean,
+    val isPartial: Boolean,
     val progress: Float?,
     val accent: DashboardAccent
 )
@@ -1085,64 +1173,88 @@ private data class DashboardSectionRow(
 private fun sectionDashboardRows(
     record: DailyRecord?,
     format: NumberFormat
-): List<DashboardSectionRow> = listOf(
-    DashboardSectionRow(
-        markerText = "१",
-        label = "नाम जप",
-        progressLabel = "${format.format(record?.did ?: 0L)}/${format.format(record?.target ?: 21_600L)}",
-        isComplete = record?.checkNaamJap == true,
-        progress = progressOf(record?.did ?: 0L, record?.target ?: 21_600L),
-        accent = DashboardAccent.Primary
-    ),
-    DashboardSectionRow(
-        markerText = "२",
-        label = "श्री हित चतुरसी जी",
-        progressLabel = "${format.format(record?.chaturasi_did ?: 0L)}/${format.format(record?.chaturasi_target ?: 12L)}",
-        isComplete = record?.checkChaturasi == true,
-        progress = progressOf(record?.chaturasi_did ?: 0L, record?.chaturasi_target ?: 12L),
-        accent = DashboardAccent.Secondary
-    ),
-    DashboardSectionRow(
-        markerText = "३",
-        label = "श्री हित राधा सुधानिधी जी स्तोत्र",
-        progressLabel = "${format.format(record?.sudhanidhi_did ?: 0L)}/${format.format(record?.sudhanidhi_target ?: 10L)}",
-        isComplete = record?.checkSudhanidhi == true,
-        progress = progressOf(record?.sudhanidhi_did ?: 0L, record?.sudhanidhi_target ?: 10L),
-        accent = DashboardAccent.Gold
-    ),
-    DashboardSectionRow(
-        markerText = "४",
-        label = "श्री हित सेवक वाणी",
-        progressLabel = "${format.format(record?.sevakVani_did ?: 0L)}/${format.format(record?.sevakVani_target ?: 5L)}",
-        isComplete = record?.checkSevakVani == true,
-        progress = progressOf(record?.sevakVani_did ?: 0L, record?.sevakVani_target ?: 5L),
-        accent = DashboardAccent.Primary
-    ),
-    DashboardSectionRow(
-        markerText = "५",
-        label = "अष्टयाम सेवा पद्धति",
-        progressLabel = if (record?.checkAshtayamSeva == true) "पूर्ण" else "शेष",
-        isComplete = record?.checkAshtayamSeva == true,
-        progress = null,
-        accent = DashboardAccent.Secondary
-    ),
-    DashboardSectionRow(
-        markerText = "६",
-        label = "नित्य पाठ रसोपासना",
-        progressLabel = if (record?.checkNityaPath == true) "पूर्ण" else "शेष",
-        isComplete = record?.checkNityaPath == true,
-        progress = null,
-        accent = DashboardAccent.Gold
-    ),
-    DashboardSectionRow(
-        markerText = "७",
-        label = "श्री वृंदावन शत लीला",
-        progressLabel = "${format.format(record?.vrindavan_did ?: 0L)}/${format.format(record?.vrindavan_target ?: 10L)}",
-        isComplete = record?.checkVrindavan == true,
-        progress = progressOf(record?.vrindavan_did ?: 0L, record?.vrindavan_target ?: 10L),
-        accent = DashboardAccent.Primary
+): List<DashboardSectionRow> {
+    val did1 = record?.did ?: 0L
+    val target1 = record?.target ?: 21_600L
+    
+    val did2 = record?.chaturasi_did ?: 0L
+    val target2 = record?.chaturasi_target ?: 12L
+    
+    val did3 = record?.sudhanidhi_did ?: 0L
+    val target3 = record?.sudhanidhi_target ?: 10L
+    
+    val did4 = record?.sevakVani_did ?: 0L
+    val target4 = record?.sevakVani_target ?: 5L
+    
+    val did7 = record?.vrindavan_did ?: 0L
+    val target7 = record?.vrindavan_target ?: 10L
+
+    return listOf(
+        DashboardSectionRow(
+            markerText = "१",
+            label = "नाम जप",
+            progressLabel = "${format.format(did1)}/${format.format(target1)}",
+            isComplete = did1 >= target1,
+            isPartial = did1 > 0L && did1 < target1,
+            progress = progressOf(did1, target1),
+            accent = DashboardAccent.Primary
+        ),
+        DashboardSectionRow(
+            markerText = "२",
+            label = "श्री हित चतुरसी जी",
+            progressLabel = "${format.format(did2)}/${format.format(target2)}",
+            isComplete = did2 >= target2,
+            isPartial = did2 > 0L && did2 < target2,
+            progress = progressOf(did2, target2),
+            accent = DashboardAccent.Secondary
+        ),
+        DashboardSectionRow(
+            markerText = "३",
+            label = "श्री हित राधा सुधानिधी जी स्तोत्र",
+            progressLabel = "${format.format(did3)}/${format.format(target3)}",
+            isComplete = did3 >= target3,
+            isPartial = did3 > 0L && did3 < target3,
+            progress = progressOf(did3, target3),
+            accent = DashboardAccent.Gold
+        ),
+        DashboardSectionRow(
+            markerText = "४",
+            label = "श्री हित सेवक वाणी",
+            progressLabel = "${format.format(did4)}/${format.format(target4)}",
+            isComplete = did4 >= target4,
+            isPartial = did4 > 0L && did4 < target4,
+            progress = progressOf(did4, target4),
+            accent = DashboardAccent.Primary
+        ),
+        DashboardSectionRow(
+            markerText = "५",
+            label = "अष्टयाम सेवा पद्धति",
+            progressLabel = if (record?.checkAshtayamSeva == true) "पूर्ण" else "शेष",
+            isComplete = record?.checkAshtayamSeva == true,
+            isPartial = false,
+            progress = null,
+            accent = DashboardAccent.Secondary
+        ),
+        DashboardSectionRow(
+            markerText = "६",
+            label = "नित्य पाठ रसोपासना",
+            progressLabel = if (record?.checkNityaPath == true) "पूर्ण" else "शेष",
+            isComplete = record?.checkNityaPath == true,
+            isPartial = false,
+            progress = null,
+            accent = DashboardAccent.Gold
+        ),
+        DashboardSectionRow(
+            markerText = "७",
+            label = "श्री वृंदावन शत लीला",
+            progressLabel = "${format.format(did7)}/${format.format(target7)}",
+            isComplete = did7 >= target7,
+            isPartial = did7 > 0L && did7 < target7,
+            progress = progressOf(did7, target7),
+            accent = DashboardAccent.Primary
+        )
     )
-)
+}
 
 private fun DailyRecord.completedSectionCount(): Int = listOf(
     checkNaamJap,

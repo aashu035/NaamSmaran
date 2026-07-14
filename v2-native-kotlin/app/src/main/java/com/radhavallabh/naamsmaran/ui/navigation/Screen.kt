@@ -41,6 +41,9 @@ sealed class Screen(val route: String) {
     /** Settings — app configuration */
     data object Settings : Screen("settings")
 
+    /** Dashboard — sadhana overview analytics */
+    data object Dashboard : Screen("dashboard")
+
     companion object {
         /**
          * Maps section index from HomeScreen grid → Screen route.

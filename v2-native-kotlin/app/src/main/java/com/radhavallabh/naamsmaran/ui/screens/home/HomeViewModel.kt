@@ -68,6 +68,12 @@ class HomeViewModel @Inject constructor(
 
     private var hideJob: Job? = null
 
+    // ── Chanting active (for sliding to corner) ──────────────────────────────
+    private val _chantingActive = MutableStateFlow(false)
+    val chantingActive: StateFlow<Boolean> = _chantingActive.asStateFlow()
+
+    private var chantingJob: Job? = null
+
     // ── Swipe-up hint visibility ─────────────────────────────────────────────
     private val _hintVisible = MutableStateFlow(true)
     val hintVisible: StateFlow<Boolean> = _hintVisible.asStateFlow()
@@ -135,7 +141,7 @@ class HomeViewModel @Inject constructor(
     }
 
     /** Add [count] naam-jap repetitions and flash the counter. */
-    fun addJap(count: Long) {
+    fun addJap(count: Long, isMainScreenTap: Boolean = false) {
         // #region agent log
         AgentDebugLog.log(
             location = "HomeViewModel.kt:addJap",
@@ -147,6 +153,24 @@ class HomeViewModel @Inject constructor(
         viewModelScope.launch {
             repository.addJapCount(count)
             flashCounter()
+        }
+        // Dismiss hint immediately on any interaction
+        dismissHint()
+
+        if (isMainScreenTap) {
+            _chantingActive.value = true
+            chantingJob?.cancel()
+            chantingJob = viewModelScope.launch {
+                delay(5000L) // 5 seconds of inactivity
+                _chantingActive.value = false
+            }
+        }
+    }
+
+    /** Add [count] mala to today's total (Track A). */
+    fun addMala(count: Long) {
+        viewModelScope.launch {
+            repository.addMalaCount(count)
         }
         // Dismiss hint immediately on any interaction
         dismissHint()

@@ -9,6 +9,7 @@ import com.radhavallabh.naamsmaran.domain.engine.CarryOverEngine
 import com.radhavallabh.naamsmaran.domain.engine.DayBoundaryEngine
 import com.radhavallabh.naamsmaran.domain.engine.NityaPathProgressCalculator
 import com.radhavallabh.naamsmaran.domain.engine.StreakEngine
+import com.radhavallabh.naamsmaran.domain.engine.MalaTargetEngine
 import com.radhavallabh.naamsmaran.domain.engine.TargetEngine
 import com.radhavallabh.naamsmaran.domain.model.CarryOverSection
 import com.radhavallabh.naamsmaran.domain.model.CarryOverSectionState
@@ -51,6 +52,9 @@ class JapRepository @Inject constructor(
     fun getAllRecords(): Flow<List<DailyRecord>> =
         dao.getAllRecords()
 
+    fun getRecordsBetween(startDate: String, endDate: String): Flow<List<DailyRecord>> =
+        dao.getRecordsBetween(startDate, endDate)
+
     fun getLifetimeCount(): Flow<Long?> =
         dao.getLifetimeJapCount()
 
@@ -85,10 +89,22 @@ class JapRepository @Inject constructor(
      * Ensure today's record exists. If it doesn't, compute today's target
      * from yesterday's data and create a fresh record.
      */
-    suspend fun ensureTodayRecord(): DailyRecord {
+    suspend fun ensureTodayRecord(): DailyRecord = database.withTransaction {
         val today = DayBoundaryEngine.getSpiritualDate()
         val existing = dao.getRecordByDateOnce(today)
-        if (existing != null) return existing
+        val safeInitial = settings.initialTarget.first().takeIf { it > 0L } ?: 21600L
+        
+        if (existing != null) {
+            if (existing.target <= 0L) {
+                val fixed = existing.copy(
+                    target = safeInitial,
+                    checkNaamJap = existing.did >= safeInitial
+                )
+                dao.upsertRecord(fixed)
+                return@withTransaction fixed
+            }
+            return@withTransaction existing
+        }
 
         // Compute today's target from yesterday
         val yesterday = DayBoundaryEngine.getYesterdaySpiritualDate()
@@ -96,19 +112,30 @@ class JapRepository @Inject constructor(
         val increment = settings.targetIncrement.first()
 
         val todayTarget = if (yesterdayRecord != null) {
+            val prevTarget = yesterdayRecord.target.takeIf { it > 0L } ?: safeInitial
             TargetEngine.calculateNextTarget(
-                targetToday = yesterdayRecord.target,
+                targetToday = prevTarget,
                 countToday = yesterdayRecord.did,
                 increment = increment
             )
         } else {
-            settings.initialTarget.first()
+            safeInitial
+        }
+
+        val todayMalaTarget = if (yesterdayRecord != null) {
+            MalaTargetEngine.calculateNextTarget(
+                targetToday = yesterdayRecord.mala_target,
+                didToday = yesterdayRecord.mala_did
+            )
+        } else {
+            11L
         }
 
         val newRecord = DailyRecord(
             date = today,
             dayOfWeek = DayBoundaryEngine.getDayOfWeekHindi(),
             target = todayTarget,
+            mala_target = todayMalaTarget,
             chaturasi_target = nextCarryOverTarget(yesterdayRecord, CarryOverSection.CHATURASI),
             sudhanidhi_target = nextCarryOverTarget(yesterdayRecord, CarryOverSection.SUDHANIDHI),
             sevakVani_target = nextCarryOverTarget(yesterdayRecord, CarryOverSection.SEVAK_VANI),
@@ -116,7 +143,7 @@ class JapRepository @Inject constructor(
         )
 
         dao.upsertRecord(newRecord)
-        return newRecord
+        return@withTransaction newRecord
     }
 
     /**
@@ -124,33 +151,48 @@ class JapRepository @Inject constructor(
      * This is the primary write operation — called from quick-add buttons,
      * custom input, and tap-per-jap mode.
      */
-    suspend fun addJapCount(count: Long) {
+    suspend fun addJapCount(count: Long) = database.withTransaction {
         val record = ensureTodayRecord()
         val newTotal = record.did + count
         upsertJapRecord(record, newTotal)
     }
 
     /**
+     * Add mala count to today's total (Track A).
+     */
+    suspend fun addMalaCount(count: Long) = database.withTransaction {
+        val record = ensureTodayRecord()
+        val newTotal = record.mala_did + count
+        dao.upsertRecord(
+            record.copy(
+                mala_did = newTotal,
+                checkMala = newTotal >= record.mala_target,
+                updatedAt = System.currentTimeMillis()
+            )
+        )
+    }
+
+    /**
      * Set exact jap count for today (used by custom number input).
      */
-    suspend fun setJapCount(count: Long) {
+    suspend fun setJapCount(count: Long) = database.withTransaction {
         val record = ensureTodayRecord()
         upsertJapRecord(record, count)
     }
 
-    suspend fun addCarryOverProgress(section: CarryOverSection, count: Long) {
+    suspend fun addCarryOverProgress(section: CarryOverSection, count: Long) = database.withTransaction {
         val record = ensureTodayRecord()
         val updatedDid = (record.didFor(section) + count).coerceAtLeast(0L)
         dao.upsertRecord(
             record.withCarryOverProgress(
                 section = section,
                 did = updatedDid,
-                checked = updatedDid > 0
+                checked = updatedDid >= record.targetFor(section)
             )
         )
     }
 
-    suspend fun resetCarryOverProgress(section: CarryOverSection) {
+    suspend fun resetCarryOverProgress(section: CarryOverSection) = database.withTransaction {
         val record = ensureTodayRecord()
         dao.upsertRecord(
             record.withCarryOverProgress(
@@ -161,7 +203,7 @@ class JapRepository @Inject constructor(
         )
     }
 
-    suspend fun setAshtayamDoneToday(done: Boolean) {
+    suspend fun setAshtayamDoneToday(done: Boolean) = database.withTransaction {
         val record = ensureTodayRecord()
         dao.upsertRecord(
             record.copy(
@@ -171,7 +213,7 @@ class JapRepository @Inject constructor(
         )
     }
 
-    suspend fun setNityaPathDoneToday(done: Boolean) {
+    suspend fun setNityaPathDoneToday(done: Boolean) = database.withTransaction {
         val record = ensureTodayRecord()
         dao.upsertRecord(
             record.copy(
@@ -205,7 +247,7 @@ class JapRepository @Inject constructor(
         dao.upsertRecord(
             record.copy(
                 did = newCount,
-                checkNaamJap = newCount > 0,
+                checkNaamJap = newCount >= record.target,
                 streakCount = newStreak,
                 updatedAt = System.currentTimeMillis()
             )
@@ -240,10 +282,17 @@ class JapRepository @Inject constructor(
 
         records.forEachIndexed { index, original ->
             val previous = result.getOrNull(index - 1)
+            val safeInitial = if (initialTarget > 0L) initialTarget else 21600L
             val todayTarget = if (previous == null) {
-                initialTarget
+                safeInitial
             } else {
-                TargetEngine.calculateNextTarget(previous.target, previous.did, increment)
+                val prevTarget = previous.target.takeIf { it > 0L } ?: safeInitial
+                TargetEngine.calculateNextTarget(prevTarget, previous.did, increment)
+            }
+            val todayMalaTarget = if (previous == null) {
+                11L
+            } else {
+                MalaTargetEngine.calculateNextTarget(previous.mala_target, previous.mala_did)
             }
             val streak = if (previous == null) {
                 StreakEngine.calculateStreak(0, todayTarget, original.did)
@@ -253,6 +302,9 @@ class JapRepository @Inject constructor(
 
             var updated = original.copy(
                 target = todayTarget,
+                checkNaamJap = original.did >= todayTarget,
+                mala_target = todayMalaTarget,
+                checkMala = original.mala_did >= todayMalaTarget,
                 streakCount = streak,
                 updatedAt = System.currentTimeMillis()
             )
@@ -273,7 +325,7 @@ class JapRepository @Inject constructor(
                     section = section,
                     target = nextTarget,
                     did = updated.didFor(section),
-                    checked = updated.didFor(section) > 0,
+                    checked = updated.didFor(section) >= nextTarget,
                     updatedAt = updated.updatedAt
                 )
             }
