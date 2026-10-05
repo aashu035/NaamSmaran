@@ -47,6 +47,7 @@ import java.util.Locale
 @Composable
 fun SettingsScreen(
     onBack: () -> Unit,
+    onOpenSantSmaran: () -> Unit = {},
     viewModel: SettingsViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -194,6 +195,10 @@ fun SettingsScreen(
 
         Spacer(modifier = Modifier.height(Dimens.GapStack))
 
+        SantSmaranSettingsCard(onOpenSantSmaran = onOpenSantSmaran)
+
+        Spacer(modifier = Modifier.height(Dimens.GapStack))
+
         GlassCardColumn {
             Text(
                 text = "प्राथमिकताएं",
@@ -323,7 +328,7 @@ fun SettingsScreen(
 }
 
 @Composable
-private fun SettingsToggleRow(
+internal fun SettingsToggleRow(
     label: String,
     subLabel: String,
     checked: Boolean,
@@ -362,7 +367,7 @@ private fun SettingsToggleRow(
 }
 
 @Composable
-private fun ActionButton(
+internal fun ActionButton(
     label: String,
     modifier: Modifier = Modifier,
     onClick: () -> Unit

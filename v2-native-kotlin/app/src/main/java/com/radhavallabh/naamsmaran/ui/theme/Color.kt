@@ -144,3 +144,31 @@ object DashboardAlpha {
     const val ActivePillBackground = 0.15f
     const val ActivePillBorder = 0.42f
 }
+
+// ═══════════════════════════════════════════════════════════════
+// प्रातः संत नाम स्मरण — reading screen & alarm screen
+// Deep maroon/black with saffron + gold accents (dawn, dīpa-light).
+// Used only by the Sant Smaran screens, independent of the 5 app themes.
+// No religious symbols other than the sampraday's own — colour only.
+// ═══════════════════════════════════════════════════════════════
+object SantSmaranColors {
+    val BackgroundTop    = Color(0xFF220608) // deep maroon
+    val BackgroundBottom = Color(0xFF070203) // near-black
+
+    val Saffron          = Color(0xFFFF9F3D)
+    val Gold             = Color(0xFFF2C66D)
+    val GoldSoft         = Color(0x33F2C66D) // 20% gold — borders / rules
+    val Maroon           = Color(0xFF5C1220)
+    val MaroonDeep       = Color(0xFF3A0B14)
+
+    val CardSurface      = Color(0x26F2C66D) // 15% gold over the dark background
+    val CardBorder       = Color(0x59F2C66D) // 35% gold
+
+    val TextPrimary      = Color(0xFFFFF3DC) // ivory
+    val TextSecondary    = Color(0xCCFFF3DC) // 80% ivory
+    val TextMuted        = Color(0x80FFF3DC) // 50% ivory
+
+    val OnAccent         = Color(0xFF220608) // text on saffron/gold buttons
+    val Positive         = Color(0xFFA8E6A0)
+    val Warning          = Color(0xFFFF8C42)
+}

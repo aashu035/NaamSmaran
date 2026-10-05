@@ -32,6 +32,23 @@ Treat that as the latest narrative handoff, but re-run verification before claim
 
 ---
 
+## प्रातः संत नाम स्मरण (added 2026-10-05)
+
+Morning saint-name recitation: a 04:00 alarm that opens a swipe-through reading screen of 138 verified names (+ opening, collective vandana, prayer, jaykara = 142 pages). Requested explicitly by the user, so it was built even though Layer 6 (platform) is still "not started" above.
+
+- **Source of truth:** `Assets/For Claude code.zip` → `sant_smaran_bundle.zip` → extracted to `Assets/sant_smaran/` (gitignored). Read its `HANDOFF_CLAUDE_CODE.md` + `VERIFICATION.md` §5 before touching content. `Assets/sant_smaran.json` (loose) is a stale pre-verification draft — do not use.
+- **Content rule:** never change, "fix", transliterate or re-spell any Devanagari string. `SantSmaranContentTest` pins `assets/sant_smaran.json` to a SHA-256; a content change must be user-approved and the hash updated deliberately.
+- **Public repo:** `app/src/main/assets/saints/*.webp` (79 photos, screenshots from another app) is **gitignored** — never commit. Missing photos fall back to the decorative name-card, so a fresh clone still builds. The JSON stays tracked (the unanchored `Assets/` ignore rule also matches this folder, hence the `!` re-include in `.gitignore`).
+- **Order (user-confirmed):** opening → sections 1–10 → collective vandana → prayer → last section (धाम, ब्रज एवं सखी वृंद) → jaykara. Built by `domain/engine/SantSmaranPageBuilder`.
+- **Reading screen:** `ui/screens/santsmaran/` (Compose `HorizontalPager`, Coil from `file:///android_asset/`, bundled Noto Sans Devanagari via `SantDevanagari` in `Type.kt`, maroon/saffron/gold tokens in `SantSmaranColors`). Route `Screen.SantSmaran`; entry points are the Settings card and the alarm only — Home keeps its 7 sections.
+- **Alarm:** `platform/santsmaran/`. `AlarmManager.setAlarmClock` → `SantAlarmReceiver` (reschedules tomorrow first) → `SantAlarmService` (`mediaPlayback` FGS: alarm-stream sound, vibration, full-screen notification) → `SantAlarmActivity` (show-when-locked; Snooze 10 min / "स्मरण आरंभ करें" → `MainActivity` with `EXTRA_OPEN_SANT_SMARAN`). `SantAlarmBootReceiver` re-arms on boot / locked boot / time + zone change / package update / exact-alarm permission change. Not WorkManager (no exact-time guarantee) and not `setExactAndAllowWhileIdle` (Doze-throttled).
+- **Why separate prefs:** alarm config lives in **device-protected** SharedPreferences (`SantAlarmPrefs`), not `AppSettingsStore` (EncryptedSharedPreferences/AndroidKeystore cannot be read before first unlock, which would lose the alarm after an overnight reboot). Not part of the backup payload. The older 06:00 "दैनिक स्मरण" reminder is unchanged and independent.
+- **Permissions checklist** lives in Settings (`SantSmaranSettingsCard`): notifications, exact alarm (12/12L only; 13+ has `USE_EXACT_ALARM`), full-screen intent (14+), battery optimisation, OEM autostart guide. The card also has a 10-second **test alarm** button.
+- **Items awaiting the user's confirmation** (shipped verbatim): `VERIFICATION.md` §5 — #22, #23, #27, #28, #79, #93, #109.
+- **Needs on-device verification** (cannot be proven in JVM tests): real lock-screen ring, Doze, reboot before first unlock, OEM autostart kills, and that the foreground-service start from the alarm broadcast is allowed on the user's Android version (a fallback full-screen notification channel exists if it is refused).
+
+---
+
 ## Current Phase
 
 Recorded project phase:

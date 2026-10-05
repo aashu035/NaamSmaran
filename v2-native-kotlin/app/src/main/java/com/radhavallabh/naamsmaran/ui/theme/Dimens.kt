@@ -59,6 +59,21 @@ object Dimens {
     const val SheetDragThresholdFraction = 0.12f
 
     // ═══════════════════════════════════════════════════════════
+    // SANT SMARAN — reading screen
+    // ═══════════════════════════════════════════════════════════
+    val SantCardCorner      = Space7          // 28dp — never below 12dp
+    // Saint photos are tall portraits (aspect 0.41–0.67), shown whole (Fit), never cropped.
+    // Frame height = fraction of the page height, clamped so it works on small and large phones.
+    const val SantPhotoHeightFraction    = 0.50f
+    const val SantNameCardHeightFraction = 0.24f
+    val SantPhotoMinHeight  = 220.dp
+    val SantPhotoMaxHeight  = 460.dp
+    val SantNameCardMinHeight = 150.dp
+    val SantNameCardMaxHeight = 240.dp
+    val SantIndicatorHeight = Space1
+    const val SantAutoAdvanceMillis = 6_000L  // optional auto-advance interval
+
+    // ═══════════════════════════════════════════════════════════
     // GLASS CARD — blur radius
     // ═══════════════════════════════════════════════════════════
     val GlassBlurRadius  = 20.dp       // backdrop-filter: blur(20px)

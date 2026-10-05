@@ -5,6 +5,20 @@
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
+    <!-- प्रातः संत नाम स्मरण alarm (personal sideloaded build, never published) -->
+    <!-- Exact alarms: Android 12/12L = user-grantable SCHEDULE_EXACT_ALARM; 13+ = USE_EXACT_ALARM auto-granted. -->
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" android:maxSdkVersion="32" />
+    <uses-permission android:name="android.permission.USE_EXACT_ALARM" />
+    <!-- Show the alarm screen over the lock screen. -->
+    <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT" />
+    <!-- Ringing runs in a typed foreground service (mediaPlayback), mandatory on Android 14+. -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK" />
+    <!-- Re-arm the alarm after reboot. -->
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <!-- Keep the CPU awake while ringing (bounded wake lock). -->
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+
     <application
         android:name=".NaamSmaranApp"
         android:allowBackup="true"
@@ -15,6 +29,7 @@
         <activity
             android:name=".MainActivity"
             android:exported="true"
+            android:launchMode="singleTask"
             android:configChanges="orientation|screenSize|screenLayout|keyboardHidden"
             android:windowSoftInputMode="adjustResize"
             android:theme="@style/Theme.NaamSmaran">
@@ -31,6 +46,47 @@
         <receiver
             android:name=".platform.AutoBackupReceiver"
             android:exported="false" />
+
+        <!-- ═══ प्रातः संत नाम स्मरण alarm ═══
+             All four components are directBootAware: the alarm must fire (and be re-armed) even if the
+             phone rebooted overnight and has not been unlocked yet. They only use device-protected
+             storage (SantAlarmPrefs) and system ringtone defaults. -->
+        <receiver
+            android:name=".platform.santsmaran.SantAlarmReceiver"
+            android:exported="false"
+            android:directBootAware="true" />
+
+        <receiver
+            android:name=".platform.santsmaran.SantAlarmBootReceiver"
+            android:exported="false"
+            android:directBootAware="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.LOCKED_BOOT_COMPLETED" />
+                <action android:name="android.intent.action.TIME_SET" />
+                <action android:name="android.intent.action.TIMEZONE_CHANGED" />
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
+                <action android:name="android.app.action.SCHEDULE_EXACT_ALARM_PERMISSION_STATE_CHANGED" />
+            </intent-filter>
+        </receiver>
+
+        <service
+            android:name=".platform.santsmaran.SantAlarmService"
+            android:exported="false"
+            android:directBootAware="true"
+            android:foregroundServiceType="mediaPlayback" />
+
+        <activity
+            android:name=".platform.santsmaran.SantAlarmActivity"
+            android:exported="false"
+            android:directBootAware="true"
+            android:launchMode="singleInstance"
+            android:excludeFromRecents="true"
+            android:taskAffinity=""
+            android:showWhenLocked="true"
+            android:turnScreenOn="true"
+            android:configChanges="orientation|screenSize|screenLayout|keyboardHidden"
+            android:theme="@style/Theme.NaamSmaran" />
     </application>
 
 </manifest>

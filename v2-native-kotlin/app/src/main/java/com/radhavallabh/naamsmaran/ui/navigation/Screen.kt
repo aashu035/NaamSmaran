@@ -44,6 +44,13 @@ sealed class Screen(val route: String) {
     /** Dashboard — sadhana overview analytics */
     data object Dashboard : Screen("dashboard")
 
+    /**
+     * प्रातः संत नाम स्मरण — morning saint-name recitation, swipe-through reading screen.
+     * Opened from Settings and from the 4 AM alarm. Not one of the 7 devotional sections
+     * (no counters, no carry-over) so it has no Home-grid tile.
+     */
+    data object SantSmaran : Screen("sant_smaran")
+
     companion object {
         /**
          * Maps section index from HomeScreen grid → Screen route.

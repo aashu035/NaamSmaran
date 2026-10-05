@@ -1,6 +1,7 @@
 package com.radhavallabh.naamsmaran.ui.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -13,6 +14,7 @@ import com.radhavallabh.naamsmaran.ui.screens.kirtan.KirtanScreen
 import com.radhavallabh.naamsmaran.ui.screens.lalita.LalitaScreen
 import com.radhavallabh.naamsmaran.ui.screens.maharas.MaharasScreen
 import com.radhavallabh.naamsmaran.ui.screens.naamjap.NaamJapScreen
+import com.radhavallabh.naamsmaran.ui.screens.santsmaran.SantSmaranScreen
 import com.radhavallabh.naamsmaran.ui.screens.settings.SettingsScreen
 import com.radhavallabh.naamsmaran.ui.screens.vrindavanlila.VrindavanLilaScreen
 import com.radhavallabh.naamsmaran.ui.screens.dashboard.DashboardScreen
@@ -42,7 +44,9 @@ import com.radhavallabh.naamsmaran.ui.screens.dashboard.DashboardScreen
 @Composable
 fun NaamSmaranApp(
     modifier: Modifier = Modifier,
-    navController: NavHostController = rememberNavController()
+    navController: NavHostController = rememberNavController(),
+    /** Incremented by MainActivity each time the alarm asks to open "प्रातः संत नाम स्मरण". */
+    openSantSmaranRequest: Int = 0
 ) {
     NavHost(
         navController = navController,
@@ -131,7 +135,25 @@ fun NaamSmaranApp(
 
         // ── Settings ──────────────────────────────────────────────────────
         composable(Screen.Settings.route) {
-            SettingsScreen(onBack = { navController.popBackStack() })
+            SettingsScreen(
+                onBack = { navController.popBackStack() },
+                onOpenSantSmaran = {
+                    navController.navigate(Screen.SantSmaran.route) { launchSingleTop = true }
+                }
+            )
+        }
+
+        // ── प्रातः संत नाम स्मरण (reading screen) ─────────────────────────
+        composable(Screen.SantSmaran.route) {
+            SantSmaranScreen(onBack = { navController.popBackStack() })
+        }
+    }
+
+    // The alarm (or its "missed" notification) asked for the reading screen. Runs after the
+    // NavHost above has set its graph, so navigate() is safe even on a cold start.
+    LaunchedEffect(openSantSmaranRequest) {
+        if (openSantSmaranRequest > 0) {
+            navController.navigate(Screen.SantSmaran.route) { launchSingleTop = true }
         }
     }
 }

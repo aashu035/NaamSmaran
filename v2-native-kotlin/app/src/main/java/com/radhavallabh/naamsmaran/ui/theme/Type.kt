@@ -2,9 +2,11 @@ package com.radhavallabh.naamsmaran.ui.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
+import com.radhavallabh.naamsmaran.R
 
 /**
  * Naam Smaran — Typography
@@ -29,6 +31,19 @@ import androidx.compose.ui.unit.sp
 val DevanagariUi = FontFamily.Default       // System renders Devanagari natively
 val DevanagariDeco = FontFamily.Serif       // Serif variant for decorative use
 val NumberFont = FontFamily.SansSerif       // Clean numbers
+
+/**
+ * Bundled Noto Sans Devanagari (OFL, v2.002) — used ONLY by the "प्रातः संत नाम स्मरण"
+ * screens, where every conjunct (श्री, ञ्ज, द्ध, ड़ …) must render identically on every phone.
+ * Static Regular + Bold (the variable TTF is deliberately not used). Validated offline with
+ * fontTools: covers all 55 Devanagari codepoints in sant_smaran.json and carries the dev2
+ * shaping features (akhn, rphf, blwf, half, cjct, nukt, pres, abvs, blws, psts, haln).
+ * Rest of the app keeps the system fonts above.
+ */
+val SantDevanagari = FontFamily(
+    Font(R.font.noto_sans_devanagari_regular, FontWeight.W400),
+    Font(R.font.noto_sans_devanagari_bold, FontWeight.W700)
+)
 
 /**
  * Type scale matching tokens.css exactly:

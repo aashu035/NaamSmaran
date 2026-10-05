@@ -6,6 +6,7 @@
 .idea/
 .cursor/
 .vscode/
+.continue/
 *.iml
 *.swp
 *~
@@ -61,6 +62,16 @@ ehthumbs.db
 frames/
 videos/
 Assets/
+
+# The unanchored "Assets/" rule above also matches (case-insensitively on Windows)
+# the native app's src/main/assets/. Re-include that one directory so
+# sant_smaran.json is tracked, then re-exclude the saint photos below.
+!v2-native-kotlin/app/src/main/assets/
+
+# Saint photos for "प्रातः संत नाम स्मरण" — screenshots from another app,
+# personal devotional use only. Never commit to this public repo.
+# (sant_smaran.json, names only, stays tracked; missing photos fall back to name-cards.)
+v2-native-kotlin/app/src/main/assets/saints/
 
 # ── Development Notes (local-only) ───────────
 # Planning docs, AI architecture exports, implementation notes.

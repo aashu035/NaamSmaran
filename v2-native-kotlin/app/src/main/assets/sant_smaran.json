@@ -1,0 +1,1115 @@
+{
+  "schemaVersion": 1,
+  "title": "प्रातः संत नाम स्मरण",
+  "alarm": {
+    "hour": 4,
+    "minute": 0
+  },
+  "opening": "जय जय प्रातः स्मरणीय श्री परम पूजनीय सतगुरुदेव भगवान जी",
+  "sections": [
+    {
+      "id": "guru_acharya",
+      "title": "गुरु-आचार्य परंपरा",
+      "items": [
+        {
+          "id": "gurudev",
+          "type": "saint",
+          "displayName": "जय जय परम पूजनीय सतगुरुदेव भगवान — पूज्य श्री हित प्रेमानंद गोविंद शरण जी महाराज",
+          "guptNaam": "जय जय श्री प्रियवादनी महारानी जी (प्रियवादनी सखी)",
+          "shortReference": "राधावल्लभीय संत, श्री हित राधा केलि कुंज, वृंदावन",
+          "imageAsset": "saints/hit_premanand_maharaj.webp",
+          "order": 1
+        },
+        {
+          "id": "acharya_charan",
+          "type": "saint",
+          "displayName": "जय जय श्री आचार्य चरण जू — श्रीहित महाप्रभु श्रीहित हरिवंश चन्द्र जू महाराज",
+          "guptNaam": "जय जय श्रीहित सजनी जू",
+          "shortReference": "श्री राधावल्लभ सम्प्रदाय के प्रवर्तक, वंशी अवतार; बाद ग्राम में प्राकट्य",
+          "imageAsset": "saints/hit_harivansh.webp",
+          "order": 2
+        },
+        {
+          "id": "bade_gurudev",
+          "type": "saint",
+          "displayName": "जय जय परम पूजनीय बड़े सतगुरुदेव भगवान — पूज्य श्री हित गौरांगी शरण जी महाराज",
+          "shortReference": "पूज्य महाराज जी के गुरुदेव",
+          "imageAsset": "saints/hit_gaurangi_sharan.webp",
+          "order": 3
+        }
+      ]
+    },
+    {
+      "id": "hit_parampara",
+      "title": "श्रीहित परंपरा के रसिक संत",
+      "items": [
+        {
+          "id": "krishnachandra",
+          "type": "saint",
+          "displayName": "जय जय गो. श्रीहित श्रीकृष्णचन्द्र महाप्रभु जी",
+          "shortReference": "श्रीहित हरिवंश महाप्रभु के पुत्र",
+          "imageAsset": "saints/krishnachandra.webp",
+          "order": 4
+        },
+        {
+          "id": "vanchandra",
+          "type": "saint",
+          "displayName": "जय जय गो. श्री वनचन्द्र महाप्रभु जी",
+          "shortReference": "श्रीहित हरिवंश महाप्रभु के पुत्र",
+          "imageAsset": "saints/vanchandra.webp",
+          "order": 5
+        },
+        {
+          "id": "chacha_vrindavan_das",
+          "type": "saint",
+          "displayName": "जय जय चाचा श्रीहित वृंदावन दास जी महाराज",
+          "shortReference": "राधावल्लभीय रसिक वाणीकार",
+          "imageAsset": "saints/chacha_vrindavan_das.webp",
+          "order": 6
+        },
+        {
+          "id": "gopinath",
+          "type": "saint",
+          "displayName": "जय जय गो. श्रीहित श्रीगोपीनाथ महाप्रभु जी महाराज",
+          "shortReference": "श्रीहित हरिवंश महाप्रभु के पुत्र",
+          "imageAsset": "saints/gopinath.webp",
+          "order": 7
+        },
+        {
+          "id": "mohanchandra",
+          "type": "saint",
+          "displayName": "जय जय गो. श्रीहित श्रीमोहनचन्द्र महाप्रभु जी महाराज",
+          "shortReference": "श्रीहित हरिवंश महाप्रभु के पुत्र",
+          "imageAsset": "saints/mohanchandra.webp",
+          "order": 8
+        },
+        {
+          "id": "hit_sevak_ji",
+          "type": "saint",
+          "displayName": "जय जय श्री दामोदर दास जी — श्रीहित सेवक जू महाराज",
+          "guptNaam": "श्री सेवक जू",
+          "shortReference": "गढ़ा (जबलपुर); 'सेवक वाणी' के रचयिता",
+          "imageAsset": "saints/hit_sevak_ji.webp",
+          "order": 9
+        },
+        {
+          "id": "hit_dhruvdas",
+          "type": "saint",
+          "displayName": "जय जय श्री हित ध्रुवदास जी महाराज",
+          "shortReference": "'बयालीस लीला' एवं भक्त नामावली के रचयिता",
+          "imageAsset": "saints/hit_dhruvdas.webp",
+          "order": 10
+        },
+        {
+          "id": "nehi_nagaridas",
+          "type": "saint",
+          "displayName": "जय जय श्री नेही नागरीदास जी महाराज",
+          "shortReference": "श्री वनचन्द्र जी से दीक्षित रसिक संत",
+          "imageAsset": "saints/nehi_nagaridas.webp",
+          "order": 11
+        },
+        {
+          "id": "narvahan",
+          "type": "saint",
+          "displayName": "जय जय श्री नरवाहन जू",
+          "shortReference": "श्रीहित महाप्रभु के शिष्य, भैगांव",
+          "imageAsset": null,
+          "order": 12
+        },
+        {
+          "id": "naharmal",
+          "type": "saint",
+          "displayName": "जय जय श्री नाहरमल जू",
+          "shortReference": "श्रीहित महाप्रभु के शिष्य",
+          "imageAsset": null,
+          "order": 13
+        },
+        {
+          "id": "hariram_vyas",
+          "type": "saint",
+          "displayName": "जय जय श्री हरिराम व्यासदेव जी महाराज",
+          "shortReference": "ओरछा के राजगुरु, श्रीहित महाप्रभु के शिष्य",
+          "imageAsset": "saints/hariram_vyas.webp",
+          "order": 14
+        },
+        {
+          "id": "hit_rooplal",
+          "type": "saint",
+          "displayName": "जय जय गो. श्री हित रूपलाल जी",
+          "shortReference": "राधावल्लभीय गोस्वामी",
+          "imageAsset": "saints/hit_rooplal.webp",
+          "order": 15
+        },
+        {
+          "id": "bholanath",
+          "type": "saint",
+          "displayName": "जय जय श्री भोलानाथ जी महाराज — सहचरी स्वरूप श्री हित भोरी सखी जू",
+          "guptNaam": "श्री हित भोरी सखी जू",
+          "shortReference": "'प्रेम की पीर' वाणी के रचयिता",
+          "imageAsset": null,
+          "order": 16
+        },
+        {
+          "id": "hit_swamini_sharan",
+          "type": "saint",
+          "displayName": "जय जय श्री हित स्वामिनी शरण जी महाराज",
+          "imageAsset": "saints/hit_swamini_sharan.webp",
+          "order": 17
+        },
+        {
+          "id": "hit_premdas",
+          "type": "saint",
+          "displayName": "जय जय रसिक संत श्रीहित प्रेमदास जी",
+          "imageAsset": "saints/hit_premdas.webp",
+          "order": 18
+        }
+      ]
+    },
+    {
+      "id": "haridasi",
+      "title": "स्वामी श्री हरिदास जी की परंपरा",
+      "items": [
+        {
+          "id": "swami_haridas",
+          "type": "saint",
+          "displayName": "जय जय स्वामी श्री हरिदास जू महाराज",
+          "shortReference": "ललिता सखी अवतार; श्री कुंजबिहारी (बांकेबिहारी) जी के प्राकट्यकर्ता",
+          "imageAsset": "saints/swami_haridas.webp",
+          "order": 19
+        },
+        {
+          "id": "vitthal_vipul_dev",
+          "type": "saint",
+          "displayName": "जय जय श्री विट्ठल विपुल देव जी महाराज",
+          "shortReference": "स्वामी हरिदास जी के प्रथम शिष्य",
+          "imageAsset": "saints/vitthal_vipul_dev.webp",
+          "order": 20
+        },
+        {
+          "id": "biharin_dev",
+          "type": "saint",
+          "displayName": "जय जय श्री विहारिन देव जू",
+          "shortReference": "श्री विट्ठल विपुल देव जी के उत्तराधिकारी",
+          "imageAsset": "saints/biharin_dev.webp",
+          "order": 21
+        },
+        {
+          "id": "nagari_dev",
+          "type": "saint",
+          "displayName": "जय जय श्री नागरी देव जू",
+          "imageAsset": "saints/nagari_dev.webp",
+          "order": 22
+        },
+        {
+          "id": "saras_dev",
+          "type": "saint",
+          "displayName": "जय जय श्री सरस देव जी",
+          "imageAsset": "saints/saras_dev.webp",
+          "order": 23
+        },
+        {
+          "id": "narhari_dev",
+          "type": "saint",
+          "displayName": "जय जय श्री नरहरि देव जू",
+          "shortReference": "स्वामी श्री रसिक देव जी के गुरु",
+          "imageAsset": "saints/narhari_dev.webp",
+          "order": 24
+        },
+        {
+          "id": "rasik_dev",
+          "type": "saint",
+          "displayName": "जय जय स्वामी श्री रसिक देव जी महाराज",
+          "shortReference": "हरिदासी परंपरा के छठे आचार्य, श्री नरहरि देव जी के शिष्य",
+          "imageAsset": "saints/rasik_dev.webp",
+          "order": 25
+        },
+        {
+          "id": "lalit_kishori_dev",
+          "type": "saint",
+          "displayName": "जय जय श्री ललित किशोरी देव जी",
+          "shortReference": "हरिदासी परंपरा के सातवें आचार्य; टटिया स्थान",
+          "imageAsset": "saints/lalit_kishori_dev.webp",
+          "order": 26
+        },
+        {
+          "id": "lalit_mohini_dev",
+          "type": "saint",
+          "displayName": "जय जय श्री ललित मोहिनी देव जू",
+          "imageAsset": "saints/lalit_mohini_dev.webp",
+          "order": 27
+        },
+        {
+          "id": "bhagwat_rasik",
+          "type": "saint",
+          "displayName": "जय जय श्री भगवत रसिक देव जू",
+          "shortReference": "'हमसों इन साधुन सों पंगति' भक्त नामावली के रचयिता",
+          "imageAsset": "saints/bhagwat_rasik.webp",
+          "order": 28
+        }
+      ]
+    },
+    {
+      "id": "rasik_sant",
+      "title": "अन्य रसिक संत एवं भक्तजन",
+      "items": [
+        {
+          "id": "bhaiji_poddar",
+          "type": "saint",
+          "displayName": "जय जय परम पूज्य भाईजी श्री हनुमानप्रसाद पोद्दार जी महाराज",
+          "imageAsset": "saints/bhaiji_poddar.webp",
+          "order": 29
+        },
+        {
+          "id": "radha_baba",
+          "type": "saint",
+          "displayName": "जय जय पूजनीय श्री राधा बाबा जी",
+          "imageAsset": "saints/radha_baba.webp",
+          "order": 30
+        },
+        {
+          "id": "pt_gaya_prasad",
+          "type": "saint",
+          "displayName": "जय जय पूजनीय पण्डित श्री गयाप्रसाद जी महाराज",
+          "imageAsset": "saints/pt_gaya_prasad.webp",
+          "order": 31
+        },
+        {
+          "id": "udiya_baba",
+          "type": "saint",
+          "displayName": "जय जय श्री पूर्णानंद तीर्थ जी महाराज — श्री उड़िया बाबा जी",
+          "shortReference": "वृंदावन के संत",
+          "imageAsset": "saints/udiya_baba.webp",
+          "order": 32
+        },
+        {
+          "id": "gwariya_baba",
+          "type": "saint",
+          "displayName": "जय जय श्री ग्वारिया बाबा जी",
+          "shortReference": "वृंदावन के मस्त संत",
+          "imageAsset": null,
+          "order": 33
+        },
+        {
+          "id": "andhe_baba",
+          "type": "saint",
+          "displayName": "जय जय श्री मदन टेर के अंधे बाबा जी",
+          "shortReference": "श्यामा-श्याम नाम रटते-रटते नेत्रहीन हुए",
+          "imageAsset": null,
+          "order": 34
+        },
+        {
+          "id": "shridhar_das_baba",
+          "type": "saint",
+          "displayName": "जय जय श्री श्रीधर दास बाबा जी",
+          "imageAsset": "saints/shridhar_das_baba.webp",
+          "order": 35
+        },
+        {
+          "id": "balbhakt_omprakash",
+          "type": "saint",
+          "displayName": "जय जय बालभक्त श्री ओमप्रकाश जी",
+          "imageAsset": "saints/balbhakt_omprakash.webp",
+          "order": 36
+        },
+        {
+          "id": "narayan_swami",
+          "type": "saint",
+          "displayName": "जय जय श्री नारायण स्वामी जी",
+          "imageAsset": "saints/narayan_swami.webp",
+          "order": 37
+        },
+        {
+          "id": "vanshi_ali",
+          "type": "saint",
+          "displayName": "जय जय श्री वंशी अली जी",
+          "imageAsset": "saints/vanshi_ali.webp",
+          "order": 38
+        },
+        {
+          "id": "anandi_mai",
+          "type": "saint",
+          "displayName": "जय जय भक्तमती माता आनंदी माई जी",
+          "shortReference": "राधावल्लभ मंदिर के पीछे निवास; लाडली जू को बहू, लाल जू को बेटा मानती थीं",
+          "imageAsset": null,
+          "order": 39
+        },
+        {
+          "id": "sharada_maa",
+          "type": "saint",
+          "displayName": "जय जय संत श्री शारदा माँ",
+          "imageAsset": "saints/sharada_maa.webp",
+          "order": 40
+        },
+        {
+          "id": "anandamayi_maa",
+          "type": "saint",
+          "displayName": "जय जय संत श्री आनंदमयी माँ",
+          "imageAsset": "saints/anandamayi_maa.webp",
+          "order": 41
+        },
+        {
+          "id": "kavi_bihari",
+          "type": "saint",
+          "displayName": "जय जय श्री कवि बिहारी जी",
+          "imageAsset": "saints/kavi_bihari.webp",
+          "order": 42
+        },
+        {
+          "id": "raskhan",
+          "type": "saint",
+          "displayName": "जय जय भक्त रसखान जी",
+          "imageAsset": "saints/raskhan.webp",
+          "order": 43
+        }
+      ]
+    },
+    {
+      "id": "sampradaya_acharya",
+      "title": "सम्प्रदाय आचार्य",
+      "items": [
+        {
+          "id": "shankaracharya",
+          "type": "saint",
+          "displayName": "जय जय श्री शंकराचार्य जी",
+          "imageAsset": "saints/shankaracharya.webp",
+          "order": 44
+        },
+        {
+          "id": "ramanujacharya",
+          "type": "saint",
+          "displayName": "जय जय श्री रामानुजाचार्य जी",
+          "imageAsset": "saints/ramanujacharya.webp",
+          "order": 45
+        },
+        {
+          "id": "madhvacharya",
+          "type": "saint",
+          "displayName": "जय जय श्री मध्वाचार्य जी",
+          "imageAsset": "saints/madhvacharya.webp",
+          "order": 46
+        },
+        {
+          "id": "nimbarkacharya",
+          "type": "saint",
+          "displayName": "जय जय निम्बार्क सम्प्रदाय संस्थापक श्री निम्बार्काचार्य जी",
+          "imageAsset": "saints/nimbarkacharya.webp",
+          "order": 47
+        },
+        {
+          "id": "shribhatt_devacharya",
+          "type": "saint",
+          "displayName": "जय जय श्री भट्ट देवाचार्य जी",
+          "imageAsset": "saints/shribhatt_devacharya.webp",
+          "order": 48
+        },
+        {
+          "id": "harivyas_devacharya",
+          "type": "saint",
+          "displayName": "जय जय श्री हरिव्यास देवाचार्य जी",
+          "imageAsset": "saints/harivyas_devacharya.webp",
+          "order": 49
+        },
+        {
+          "id": "ramanandacharya",
+          "type": "saint",
+          "displayName": "जय जय श्री रामानन्दाचार्य जी",
+          "imageAsset": "saints/ramanandacharya.webp",
+          "order": 50
+        },
+        {
+          "id": "vallabhacharya",
+          "type": "saint",
+          "displayName": "जय जय पुष्टि मार्ग संस्थापक महाप्रभु श्री वल्लभाचार्य जी",
+          "imageAsset": "saints/vallabhacharya.webp",
+          "order": 51
+        }
+      ]
+    },
+    {
+      "id": "gaudiya",
+      "title": "गौड़ीय परंपरा",
+      "items": [
+        {
+          "id": "chaitanya",
+          "type": "saint",
+          "displayName": "जय जय श्री चैतन्य महाप्रभु जी",
+          "imageAsset": "saints/chaitanya.webp",
+          "order": 52
+        },
+        {
+          "id": "nityanand",
+          "type": "saint",
+          "displayName": "जय जय श्री नित्यानंद महाप्रभु जी",
+          "imageAsset": "saints/nityanand.webp",
+          "order": 53
+        },
+        {
+          "id": "roop_goswami",
+          "type": "saint",
+          "displayName": "जय जय श्री रूप गोस्वामी जी",
+          "imageAsset": "saints/roop_goswami.webp",
+          "order": 54
+        },
+        {
+          "id": "sanatan_goswami",
+          "type": "saint",
+          "displayName": "जय जय श्री सनातन गोस्वामी जी",
+          "imageAsset": "saints/sanatan_goswami.webp",
+          "order": 55
+        },
+        {
+          "id": "jiva_goswami",
+          "type": "saint",
+          "displayName": "जय जय श्री जीव गोस्वामी जी",
+          "imageAsset": "saints/jiva_goswami.webp",
+          "order": 56
+        },
+        {
+          "id": "gopal_bhatt",
+          "type": "saint",
+          "displayName": "जय जय श्री गोपाल भट्ट गोस्वामी जी",
+          "imageAsset": "saints/gopal_bhatt.webp",
+          "order": 57
+        },
+        {
+          "id": "raghunath_bhatt_goswami",
+          "type": "saint",
+          "displayName": "जय जय श्री रघुनाथ भट्ट गोस्वामी जी",
+          "imageAsset": "saints/raghunath_bhatt_goswami.webp",
+          "order": 58
+        },
+        {
+          "id": "raghunath_das_goswami",
+          "type": "saint",
+          "displayName": "जय जय श्री रघुनाथ दास गोस्वामी जी",
+          "shortReference": "राधा कुंड",
+          "imageAsset": "saints/raghunath_das_goswami.webp",
+          "order": 59
+        },
+        {
+          "id": "namacharya_haridas",
+          "type": "saint",
+          "displayName": "जय जय पूजनीय श्री (नामाचार्य) हरिदास जी महाराज",
+          "shortReference": "22 बाज़ारों में बेंत खाकर भी 'हरि बोल' नहीं छोड़ा",
+          "imageAsset": null,
+          "order": 60
+        },
+        {
+          "id": "narottam_das",
+          "type": "saint",
+          "displayName": "जय जय श्री नरोत्तम दास जी",
+          "imageAsset": "saints/narottam_das.webp",
+          "order": 61
+        }
+      ]
+    },
+    {
+      "id": "pushtimarg",
+      "title": "पुष्टिमार्ग एवं अष्टछाप",
+      "items": [
+        {
+          "id": "vitthalnath",
+          "type": "saint",
+          "displayName": "जय जय श्री विट्ठलनाथ जी (गुसाईं जी)",
+          "shortReference": "श्री वल्लभाचार्य जी के पुत्र",
+          "imageAsset": "saints/vitthalnath.webp",
+          "order": 62
+        },
+        {
+          "id": "surdas",
+          "type": "saint",
+          "displayName": "जय जय श्री सूरदास जी",
+          "shortReference": "अष्टछाप; श्री वल्लभाचार्य जी के शिष्य",
+          "imageAsset": "saints/surdas.webp",
+          "order": 63
+        },
+        {
+          "id": "kumbhandas",
+          "type": "saint",
+          "displayName": "जय जय श्री कुंभनदास जी",
+          "shortReference": "अष्टछाप; श्री वल्लभाचार्य जी के शिष्य",
+          "imageAsset": "saints/kumbhandas.webp",
+          "order": 64
+        },
+        {
+          "id": "parmanand_das",
+          "type": "saint",
+          "displayName": "जय जय श्री परमानंद दास जी",
+          "shortReference": "अष्टछाप; श्री वल्लभाचार्य जी के शिष्य",
+          "imageAsset": "saints/parmanand_das.webp",
+          "order": 65
+        },
+        {
+          "id": "krishnadas",
+          "type": "saint",
+          "displayName": "जय जय श्री कृष्णदास जी",
+          "shortReference": "अष्टछाप; श्री वल्लभाचार्य जी के शिष्य",
+          "imageAsset": "saints/krishnadas.webp",
+          "order": 66
+        },
+        {
+          "id": "nanddas",
+          "type": "saint",
+          "displayName": "जय जय श्री नंददास जी",
+          "shortReference": "अष्टछाप; श्री विट्ठलनाथ जी के शिष्य",
+          "imageAsset": "saints/nanddas.webp",
+          "order": 67
+        },
+        {
+          "id": "chaturbhuj_das",
+          "type": "saint",
+          "displayName": "जय जय श्री चतुर्भुज दास जी",
+          "shortReference": "अष्टछाप; श्री विट्ठलनाथ जी के शिष्य",
+          "imageAsset": "saints/chaturbhuj_das.webp",
+          "order": 68
+        },
+        {
+          "id": "chhit_swami",
+          "type": "saint",
+          "displayName": "जय जय श्री छीत स्वामी जी",
+          "shortReference": "अष्टछाप; श्री विट्ठलनाथ जी के शिष्य",
+          "imageAsset": "saints/chhit_swami.webp",
+          "order": 69
+        },
+        {
+          "id": "govind_swami",
+          "type": "saint",
+          "displayName": "जय जय श्री गोविन्द स्वामी जी",
+          "shortReference": "अष्टछाप; श्री विट्ठलनाथ जी के शिष्य",
+          "imageAsset": "saints/govind_swami.webp",
+          "order": 70
+        }
+      ]
+    },
+    {
+      "id": "warkari",
+      "title": "महाराष्ट्र के संत",
+      "items": [
+        {
+          "id": "chokhamela",
+          "type": "saint",
+          "displayName": "जय जय भक्त श्री चोखामेला जी",
+          "imageAsset": null,
+          "order": 71
+        },
+        {
+          "id": "namdev",
+          "type": "saint",
+          "displayName": "जय जय श्री नामदेव जी महाराज",
+          "imageAsset": "saints/namdev.webp",
+          "order": 72
+        },
+        {
+          "id": "gyaneshwar",
+          "type": "saint",
+          "displayName": "जय जय संत श्री ज्ञानेश्वर जी महाराज",
+          "imageAsset": "saints/gyaneshwar.webp",
+          "order": 73
+        },
+        {
+          "id": "muktabai",
+          "type": "saint",
+          "displayName": "जय जय संत श्री मुक्ताबाई जी",
+          "imageAsset": "saints/muktabai.webp",
+          "order": 74
+        },
+        {
+          "id": "janabai",
+          "type": "saint",
+          "displayName": "जय जय संत श्री जनाबाई जी",
+          "imageAsset": "saints/janabai.webp",
+          "order": 75
+        },
+        {
+          "id": "eknath",
+          "type": "saint",
+          "displayName": "जय जय संत श्री एकनाथ जी महाराज",
+          "imageAsset": "saints/eknath.webp",
+          "order": 76
+        },
+        {
+          "id": "tukaram",
+          "type": "saint",
+          "displayName": "जय जय संत श्री तुकाराम जी",
+          "imageAsset": "saints/tukaram.webp",
+          "order": 77
+        },
+        {
+          "id": "sakhubai",
+          "type": "saint",
+          "displayName": "जय जय भक्त सखुबाई जी",
+          "imageAsset": "saints/sakhubai.webp",
+          "order": 78
+        }
+      ]
+    },
+    {
+      "id": "bhaktamal",
+      "title": "भक्तमाल के भक्त",
+      "items": [
+        {
+          "id": "agradev",
+          "type": "saint",
+          "displayName": "जय जय पूजनीय श्री अग्रदेव (अग्रदास) जी महाराज",
+          "shortReference": "श्री नाभा जी के गुरु",
+          "imageAsset": null,
+          "order": 79
+        },
+        {
+          "id": "nabhadas",
+          "type": "saint",
+          "displayName": "जय जय पूजनीय श्री नाभादास जी महाराज",
+          "shortReference": "'भक्तमाल' के रचयिता",
+          "imageAsset": "saints/nabhadas.webp",
+          "order": 80
+        },
+        {
+          "id": "priyadas",
+          "type": "saint",
+          "displayName": "जय जय पूजनीय श्री प्रियादास जी महाराज",
+          "shortReference": "भक्तमाल की टीका 'भक्तिरसबोधिनी' के रचयिता",
+          "imageAsset": null,
+          "order": 81
+        },
+        {
+          "id": "jaydev",
+          "type": "saint",
+          "displayName": "जय जय श्री जयदेव गोस्वामी जी",
+          "imageAsset": "saints/jaydev.webp",
+          "order": 82
+        },
+        {
+          "id": "narsi_mehta",
+          "type": "saint",
+          "displayName": "जय जय श्री नरसी मेहता जी",
+          "imageAsset": "saints/narsi_mehta.webp",
+          "order": 83
+        },
+        {
+          "id": "kevalram",
+          "type": "saint",
+          "displayName": "जय जय श्री केवलराम जी महाराज",
+          "shortReference": "कुएँ में दबकर भी राम-नाम जपते रहे; राजा ने खुदवाकर निकलवाया",
+          "imageAsset": null,
+          "order": 84
+        },
+        {
+          "id": "supach_valmiki",
+          "type": "saint",
+          "displayName": "जय जय भक्त श्री सुपच वाल्मीकि जी",
+          "imageAsset": null,
+          "order": 85
+        },
+        {
+          "id": "ajamil",
+          "type": "saint",
+          "displayName": "जय जय श्री अजामिल जी",
+          "imageAsset": null,
+          "order": 86
+        },
+        {
+          "id": "jaymal",
+          "type": "saint",
+          "displayName": "जय जय श्री जयमल जी",
+          "imageAsset": null,
+          "order": 87
+        },
+        {
+          "id": "madhavdas_baba",
+          "type": "saint",
+          "displayName": "जय जय श्री माधवदास बाबा जी",
+          "shortReference": "जगन्नाथ पुरी; भूखे होने पर जगन्नाथ जी स्वयं थाल लाए",
+          "imageAsset": null,
+          "order": 88
+        },
+        {
+          "id": "raghunath_mahapatra",
+          "type": "saint",
+          "displayName": "जय जय श्री रघुनाथ महापात्र जी एवं भक्तमती अन्नपूर्णा जी",
+          "shortReference": "जगन्नाथ पुरी; ससुराल द्वारा दिया विष भगवत्-प्रसाद बन गया",
+          "imageAsset": null,
+          "order": 89
+        },
+        {
+          "id": "raka_banka",
+          "type": "saint",
+          "displayName": "जय जय श्री राका जी एवं बांका जी",
+          "shortReference": "पंढरपुर का वैरागी भक्त-दंपति",
+          "imageAsset": null,
+          "order": 90
+        },
+        {
+          "id": "khargsen",
+          "type": "saint",
+          "displayName": "जय जय श्री हित खरगसेन जी महाराज",
+          "shortReference": "ललित लीला करते हुए देह त्यागी (ध्रुवदास जी की भक्त नामावली)",
+          "imageAsset": null,
+          "order": 91
+        },
+        {
+          "id": "pipa_sita",
+          "type": "saint",
+          "displayName": "जय जय श्री पीपा जी एवं श्री सीता सहचरी जी",
+          "imageAsset": null,
+          "order": 92
+        },
+        {
+          "id": "chidhar",
+          "type": "saint",
+          "displayName": "जय जय श्री चीधर जी एवं श्री चीधरानी जी",
+          "shortReference": "संत-सेवा के लिए अपना एकमात्र वस्त्र तक बेच दिया",
+          "imageAsset": null,
+          "order": 93
+        },
+        {
+          "id": "karmaiti_bai",
+          "type": "saint",
+          "displayName": "जय जय भक्त करमैती बाई जी",
+          "imageAsset": "saints/karmaiti_bai.webp",
+          "order": 94
+        },
+        {
+          "id": "ganga_jamuna",
+          "type": "saint",
+          "displayName": "जय जय श्री गंगाबाई जी एवं जमुनाबाई जी",
+          "shortReference": "ध्रुवदास जी ने इन्हें परम भागवत कहा",
+          "imageAsset": null,
+          "order": 95
+        },
+        {
+          "id": "karma_bai",
+          "type": "saint",
+          "displayName": "जय जय भक्तमती श्री करमा बाई जी",
+          "shortReference": "जगन्नाथ जी को खिचड़ी का भोग",
+          "imageAsset": null,
+          "order": 96
+        },
+        {
+          "id": "ratnavati",
+          "type": "saint",
+          "displayName": "जय जय भक्त रानी रत्नावती जी",
+          "imageAsset": "saints/ratnavati.webp",
+          "order": 97
+        },
+        {
+          "id": "mirabai",
+          "type": "saint",
+          "displayName": "जय जय भक्तिमती मीरा बाई जी",
+          "imageAsset": "saints/mirabai.webp",
+          "order": 98
+        },
+        {
+          "id": "tulsidas",
+          "type": "saint",
+          "displayName": "जय जय गोस्वामी श्री तुलसीदास जी",
+          "imageAsset": "saints/tulsidas.webp",
+          "order": 99
+        },
+        {
+          "id": "ravidas",
+          "type": "saint",
+          "displayName": "जय जय श्री रैदास (रविदास) जी महाराज",
+          "imageAsset": "saints/ravidas.webp",
+          "order": 100
+        },
+        {
+          "id": "kabir",
+          "type": "saint",
+          "displayName": "जय जय संत कबीरदास जी",
+          "imageAsset": "saints/kabir.webp",
+          "order": 101
+        }
+      ]
+    },
+    {
+      "id": "pauranik",
+      "title": "पौराणिक भक्त",
+      "items": [
+        {
+          "id": "ambarish",
+          "type": "saint",
+          "displayName": "जय जय श्री अम्बरीष जी एवं भक्तमती छोटी महारानी जी",
+          "shortReference": "एकादशी व्रत; सुदर्शन चक्र से रक्षा",
+          "imageAsset": null,
+          "order": 102
+        },
+        {
+          "id": "nal_damayanti",
+          "type": "saint",
+          "displayName": "जय जय श्री नल एवं दमयंती जी",
+          "imageAsset": null,
+          "order": 103
+        },
+        {
+          "id": "shabari",
+          "type": "saint",
+          "displayName": "जय जय भक्तमती माता शबरी जी",
+          "imageAsset": null,
+          "order": 104
+        },
+        {
+          "id": "draupadi_pandav",
+          "type": "saint",
+          "displayName": "जय जय भक्तमती माता द्रौपदी जी एवं समस्त पाँचों पांडव",
+          "imageAsset": null,
+          "order": 105
+        },
+        {
+          "id": "bharat",
+          "type": "saint",
+          "displayName": "जय जय भक्त भगवान श्री भरत जी",
+          "imageAsset": null,
+          "order": 106
+        },
+        {
+          "id": "hanuman",
+          "type": "saint",
+          "displayName": "जय जय भक्त भगवान श्री हनुमान जी",
+          "imageAsset": null,
+          "order": 107
+        },
+        {
+          "id": "vibhishan",
+          "type": "saint",
+          "displayName": "जय जय भक्त श्री विभीषण जी",
+          "imageAsset": null,
+          "order": 108
+        },
+        {
+          "id": "bhishma",
+          "type": "saint",
+          "displayName": "जय जय भक्त श्री भीष्म पितामह जी",
+          "imageAsset": null,
+          "order": 109
+        },
+        {
+          "id": "valmiki",
+          "type": "saint",
+          "displayName": "जय जय आदिकवि श्री वाल्मीकि जी",
+          "imageAsset": null,
+          "order": 110
+        }
+      ]
+    },
+    {
+      "id": "dham_sakhi",
+      "title": "धाम, ब्रज एवं सखी वृंद",
+      "items": [
+        {
+          "id": "vrindavan",
+          "type": "dham",
+          "displayName": "जय जय श्री वृंदावन धाम",
+          "imageAsset": null,
+          "order": 111
+        },
+        {
+          "id": "barsana",
+          "type": "dham",
+          "displayName": "जय जय श्री बरसाना गाँव",
+          "imageAsset": null,
+          "order": 112
+        },
+        {
+          "id": "nandgaon",
+          "type": "dham",
+          "displayName": "जय जय श्री नंदगाँव",
+          "imageAsset": null,
+          "order": 113
+        },
+        {
+          "id": "giriraj",
+          "type": "dham",
+          "displayName": "जय जय श्री गिरिराज जी महाराज",
+          "imageAsset": null,
+          "order": 114
+        },
+        {
+          "id": "radha_kund",
+          "type": "dham",
+          "displayName": "जय जय श्री राधा कुंड",
+          "imageAsset": null,
+          "order": 115
+        },
+        {
+          "id": "mansarovar",
+          "type": "dham",
+          "displayName": "जय जय श्री मानसरोवर",
+          "imageAsset": null,
+          "order": 116
+        },
+        {
+          "id": "baad_gram",
+          "type": "dham",
+          "displayName": "जय जय श्री बाद ग्राम",
+          "shortReference": "श्रीहित हरिवंश महाप्रभु की प्राकट्य स्थली",
+          "imageAsset": null,
+          "order": 117
+        },
+        {
+          "id": "seva_kunj",
+          "type": "dham",
+          "displayName": "जय जय श्री सेवा कुंज",
+          "imageAsset": null,
+          "order": 118
+        },
+        {
+          "id": "rasik_triveni",
+          "type": "dham",
+          "displayName": "जय जय श्री रसिक त्रिवेणी",
+          "shortReference": "जहाँ श्रीहित हरिवंश महाप्रभु, श्री हरिराम व्यास जी एवं स्वामी श्री हरिदास जी का मिलन हुआ",
+          "imageAsset": null,
+          "order": 119
+        },
+        {
+          "id": "ashtasakhi_gaon",
+          "type": "dham",
+          "displayName": "जय जय समस्त अष्टसखियन के गाँव",
+          "imageAsset": null,
+          "order": 120
+        },
+        {
+          "id": "braj_84kos",
+          "type": "dham",
+          "displayName": "जय जय संपूर्ण चौरासी कोस ब्रजमंडल",
+          "imageAsset": null,
+          "order": 121
+        },
+        {
+          "id": "brajvasi",
+          "type": "dham",
+          "displayName": "जय जय समस्त ब्रजवासियन",
+          "imageAsset": null,
+          "order": 122
+        },
+        {
+          "id": "braj_jeev",
+          "type": "dham",
+          "displayName": "जय जय ब्रजमंडल के समस्त खग-मृग, पशु-पक्षी, वनस्पति एवं लता जू",
+          "imageAsset": null,
+          "order": 123
+        },
+        {
+          "id": "sahchari_vrind",
+          "type": "sakhi",
+          "displayName": "जय जय समस्त सहचरियन",
+          "imageAsset": null,
+          "order": 124
+        },
+        {
+          "id": "lalita",
+          "type": "sakhi",
+          "displayName": "जय जय श्री ललिता जू",
+          "imageAsset": null,
+          "order": 125
+        },
+        {
+          "id": "vishakha",
+          "type": "sakhi",
+          "displayName": "जय जय श्री विशाखा जू",
+          "imageAsset": null,
+          "order": 126
+        },
+        {
+          "id": "champaklata",
+          "type": "sakhi",
+          "displayName": "जय जय श्री चंपकलता जू",
+          "imageAsset": null,
+          "order": 127
+        },
+        {
+          "id": "chitra",
+          "type": "sakhi",
+          "displayName": "जय जय श्री चित्रा जू",
+          "imageAsset": null,
+          "order": 128
+        },
+        {
+          "id": "tungvidya",
+          "type": "sakhi",
+          "displayName": "जय जय श्री तुंगविद्या जू",
+          "imageAsset": null,
+          "order": 129
+        },
+        {
+          "id": "indulekha",
+          "type": "sakhi",
+          "displayName": "जय जय श्री इंदुलेखा जू",
+          "imageAsset": null,
+          "order": 130
+        },
+        {
+          "id": "rangdevi",
+          "type": "sakhi",
+          "displayName": "जय जय श्री रंगदेवी जू",
+          "imageAsset": null,
+          "order": 131
+        },
+        {
+          "id": "sudevi",
+          "type": "sakhi",
+          "displayName": "जय जय श्री सुदेवी जू",
+          "imageAsset": null,
+          "order": 132
+        },
+        {
+          "id": "yamuna",
+          "type": "dham",
+          "displayName": "जय जय श्री यमुने रसरानी",
+          "imageAsset": null,
+          "order": 133
+        },
+        {
+          "id": "raj_rani",
+          "type": "dham",
+          "displayName": "जय जय श्री रज रानी जू",
+          "shortReference": "श्री वृंदावन धाम में श्री लाडली जू के चरणों की रज",
+          "imageAsset": null,
+          "order": 134
+        },
+        {
+          "id": "tulsi_sakhi",
+          "type": "sakhi",
+          "displayName": "जय जय श्री तुलसी सखी जू",
+          "imageAsset": null,
+          "order": 135
+        },
+        {
+          "id": "dharti_maiya",
+          "type": "dham",
+          "displayName": "जय जय श्री धरती मैया",
+          "imageAsset": null,
+          "order": 136
+        },
+        {
+          "id": "gau_mata",
+          "type": "dham",
+          "displayName": "जय जय श्री गौ माता",
+          "imageAsset": null,
+          "order": 137
+        },
+        {
+          "id": "mata_pita",
+          "type": "dham",
+          "displayName": "जय जय अपने-अपने मात-पिता",
+          "imageAsset": null,
+          "order": 138
+        }
+      ]
+    }
+  ],
+  "collectiveVandana": "जय जय समस्त ब्रह्मांडों के व्याप्त-अव्याप्त सभी संतजन, मुनिजन, रसिकजन, भगवत्प्रेमी जन; पूजनीय श्री आचार्य चरण जू, पूजनीय श्री सतगुरुदेव भगवान एवं पूजनीय श्री बड़े सतगुरुदेव भगवान के समस्त कृपापात्र शरणागत जन — समस्त संत हरि भक्तन के श्री चरणों में बारंबार नमन, बारंबार प्रणाम।",
+  "prayer": "आप सभी से यही प्रार्थना है कि आपकी कृपा हो तो हम कुछ प्रेम कर पाएँ, लाडली लाल के लायक कुछ हो पाएँ। अन्यथा इस संसार की मोह-माया और सांसारिक वस्तुओं में हम इतने खो चुके हैं कि वास्तविक सुख को भूल चुके हैं। आप कृपा करें, आप परम उदार हैं। आपकी कृपा से ही लाडली लाल जी के चरणों की प्रीति बढ़ती है। आप रसिकजन कृपा करें।",
+  "jaykara": [
+    "जै-जै श्रीनवनिभृतनिकुञ्ज विलासी श्रीहित राधावल्लभलाल की जय !",
+    "ठा० श्री राधामोहन जू महाराज की जय !",
+    "ठा० श्री राधापिय जू महाराज की जय !",
+    "महाप्रभु श्रीहित हरिवंशचन्द्रजू महाराज की जय !",
+    "श्रीहित सेवकजू महाराज की जय !",
+    "समस्त सहचरीवृन्द की जय !",
+    "श्रीवृन्दावन धाम की जय ! श्रीयमुना रसरानी की जय !",
+    "समस्त सन्त हरि भक्तन की जय !",
+    "श्रीसद्गुरुदेव भगवान् की जय !",
+    "जै जै श्रीराधे.. श्याम ! जै जै श्रीराधे.. श्याम !",
+    "जै जै श्रीराधे.. श्याम ! जै जै श्रीहित हरिवंश !"
+  ]
+}
